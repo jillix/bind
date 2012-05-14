@@ -74,10 +74,6 @@ define(function() {
                 
                 "click": [
                     
-                    {
-                        //fn ?? observer event??,
-                        params: [1, 2, "3"]
-                    }
                 ],
                 
                 "error": []
@@ -86,69 +82,73 @@ define(function() {
         };
         */
         
-        //check if config variable is an object
-        if (typeof config !== "object" ) {
+        //check mandatory config attributes
+        if (typeof config === "object" && (typeof config.value === "string" && typeof config.value === "number") || typeof config.event === "object") {
             
-            return;
-        }
-        
-        //check if value is a string or number
-        if (typeof config.value !== "string" || typeof config.value !== "number") {
+            //set element to the document instance if element is not a DOM element
+            if (!(config.element instanceof Document || config.element instanceof Element)) {
+                
+                config.element = document;
+            }
             
-            return;
-        }
-        
-        //set element to the document instance if element is not a DOM element
-        if (!(config.element instanceof Document || config.element instanceof Element)) {
-            
-            config.element = document;
-        }
-        
-        //a selector is required if element is the document instance
-        if (config.element instanceof Document && typeof config.selector !== "string") {
-            
-            return;
-        }
-        
-        //get the child element, if selector is given
-        if (typeof config.selector == "string") {
-            
-            config.element = config.element.querySelector(config.selector);
-            
-            if (!config.element) {
+            //a selector is required if element is the document instance
+            if (config.element instanceof Document && typeof config.selector !== "string") {
                 
                 return;
             }
-        }
-        
-        //filter content
-        if (typeof config.filters === "object") {
             
-            for (var filter in config.filters) {
+            //get the child element, if selector is given
+            if (typeof config.selector == "string") {
                 
-                if (filters[filter]) {
+                config.element = config.element.querySelector(config.selector);
+                
+                if (!config.element) {
                     
-                    config.value = filters[filter](config.value, filters[filter]);
+                    return;
+                }
+            }
+            
+            if (typeof config.events === "object") {
+                
+                // TODO bind events
+                for (var event in config.events) {
+                    
+                    for (var i = 0, l = config.events.length; i < l; ++i) {
+                        
+                        config.element.addEventListener(event, config.events[event][i], false);
+                    }
+                }
+            }
+            
+            if (config.value) {
+                
+                //filter content
+                if (typeof config.filters === "object") {
+                    
+                    for (var filter in config.filters) {
+                        
+                        if (filters[filter]) {
+                            
+                            config.value = filters[filter](config.value, filters[filter]);
+                        }
+                    }
+                }
+                
+                //attach pre/post values
+                config.value = (config.pre || "") + config.value + (config.post || "");
+                
+                //set content
+                if (typeof config.attr === "string") {
+                    
+                    config.element.setAttribute(config.attr, config.value);
+                }
+                else {
+                    
+                    config.element.innerHTML = config.value;
                 }
             }
         }
         
-        //attach pre/post values
-        config.value = (config.pre || "") + config.value + (config.post || "");
-        
-        if (typeof config.events === "object") {
-            
-            // TODO bind events
-        }
-        
-        //set content
-        if (typeof config.attr === "string") {
-            
-            config.element.setAttribute(config.attr, config.value);
-        }
-        else {
-            
-            config.element.innerHTML = config.value;
-        }
+        return;
     };
 });
