@@ -47,6 +47,7 @@ window.onload = function(){
             
             value: "attribute value",
             element: document.getElementById("test"),
+            //selector: "#test",
             attr: "class"
         });
     });

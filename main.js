@@ -54,16 +54,26 @@ define(function() {
         }
     };
     
+    // TODO remove event function
     function addEvent(element, event, config) {
         
-        element.addEventListener(event, (function(object, method, args) {
+        var handler = (function(object, method, args) {
             
             return function() {
                 
                 object[method].apply(object, args);
             };
             
-        })(config.object, config.method, config.args), false);
+        })(config.object, config.method, config.args);
+        
+        if (element.addEventListener) {
+            
+            element.addEventListener(event, handler, config.useCapture || false);
+        }
+        else if (element.attachEvent) {
+            
+            element.attachEvent(event, handler);
+        }
     }
     
     return function(config) {
@@ -88,7 +98,8 @@ define(function() {
                     {
                         object: myClass,
                         method: "myFunction1",
-                        args: [1, 2, "3"]
+                        args: [1, "two", {}, []],
+                        useCapture: true //false is default
                     }
                 ],
                 
