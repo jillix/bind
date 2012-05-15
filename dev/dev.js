@@ -11,7 +11,7 @@ window.onload = function(){
         }
     };
     
-    require(["./main"], function(bind) {
+    require(["../main"], function(bind) {
         
         bind({
             
