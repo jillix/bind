@@ -1,4 +1,4 @@
 bind
 ====
 
-Data binding for HTML
+bind content and events to DOM elements
