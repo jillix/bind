@@ -55,6 +55,7 @@ define(function() {
     };
     
     // TODO remove event function
+    // TODO checke memory usage
     function addEvent(element, event, config) {
         
         var handler = (function(object, method, args) {
@@ -74,47 +75,45 @@ define(function() {
             
             element.attachEvent(event, handler);
         }
-    }
+    }   
+    /*
+    config = {
     
-    return function(config) {
-        
-        /*
-        config = {
-        
-            value: "i am the content", //mandatory!
-            element: Element, //mandatory!
-            selector: "",
-            filters: {
-                
-                fixed: 2,
-                max: 32,
-                min: 1,
-            },
-            pre: "./image/",
-            post: ".jpg",
-            events: {
-                
-                "mousedown": [
-                    {
-                        object: myClass,
-                        method: "myFunction1",
-                        args: [1, "two", {}, []],
-                        useCapture: true //false is default
-                    }
-                ],
-                
-                "mouseup": {
-                    
+        value: "i am the content", //mandatory!
+        element: Element, //mandatory!
+        selector: "",
+        filters: {
+            
+            fixed: 2,
+            max: 32,
+            min: 1,
+        },
+        pre: "./image/",
+        post: ".jpg",
+        events: {
+            
+            "mousedown": [
+                {
                     object: myClass,
-                    method: "myFunction2",
-                    args: ["xyz"]
+                    method: "myFunction1",
+                    args: [1, "two", {}, []],
+                    useCapture: true //false is default
                 }
+            ],
+            
+            "mouseup": {
                 
-                //"error": []
-            },
-            attr: "class"
-        };
-        */
+                object: myClass,
+                method: "myFunction2",
+                args: ["xyz"]
+            }
+            
+            //"error": []
+        },
+        attr: "class"
+    };
+    */
+    function Bind(config) {
         
         //check mandatory config attributes
         if (typeof config === "object" && (typeof config.value === "string" || typeof config.value === "number" || typeof config.event === "object")) {
@@ -147,9 +146,19 @@ define(function() {
                 
                 for (var event in config.events) {
                     
+                    if (!config.events[event].object) {
+                        
+                        config.events[event].object = this.eventObject || {};
+                    }
+                    
                     if (config.events[event] instanceof Array) {
                         
                         for (var i = 0, l = config.events[event].length; i < l; ++i) {
+                            
+                            if (!config.events[event][i].object) {
+                                
+                                config.events[event][i].object = this.eventObject || {};
+                            }
                             
                             addEvent(config.element, event, config.events[event][i]);
                         }
@@ -176,7 +185,7 @@ define(function() {
                 }
                 
                 //attach pre/post values
-                config.value = (config.pre || "") + config.value + (config.post || "");
+                config.value = (config.pre || this.pre || "") + config.value + (config.post || this.post || "");
                 
                 //set content
                 if (typeof config.attr === "string") {
@@ -191,5 +200,48 @@ define(function() {
         }
         
         return;
+    }
+    
+    /*
+    config = {
+        
+        eventObject: {},
+        pre: ""
+        post: ""
+    }
+    */
+    return function(defaultConfig) {
+        
+        var bind = {};
+        
+        if (defaultConfig.eventObject) {
+            
+            bind.eventObject = defaultConfig.eventObject;
+        }
+        
+        if (defaultConfig.pre) {
+            
+            bind.pre = defaultConfig.pre;
+        }
+        
+        if (defaultConfig.post) {
+            
+            bind.post = defaultConfig.post;
+        }
+        
+        return function(elementConfig) {
+            
+            if (elementConfig instanceof Array) {
+                
+                for (var i = 0, l = elementConfig.length; i < l; ++i) {
+                    
+                    Bind.call(bind, elementConfig[i]);
+                }
+            }
+            else {
+                
+                Bind.call(bind, elementConfig);
+            }
+        };
     };
 });

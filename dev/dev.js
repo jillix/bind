@@ -1,3 +1,13 @@
+var N = {
+    
+    clone: function(obj){
+
+        function O(){}
+        O.prototype = obj;
+        return new O();
+    }
+};
+
 window.onload = function(){
     
     var test = {
@@ -11,24 +21,28 @@ window.onload = function(){
         }
     };
     
-    require(["../main"], function(bind) {
+    require(["../main"], function(Bind) {
+        
+        //set default values
+        var bind = Bind({
+            
+            eventObject: test,
+            pre: "pre value "
+        });
         
         bind({
             
             value: 12.5684,
             element: document.getElementById("test"),
-            //selector: "#test",
             filters: {
                 
                 fixed: 2
             },
-            pre: "CHF ",
             post: " Post content",
             events: {
                 
                 "mousedown": [
                     {
-                        object: test,
                         method: "hoi",
                         args: [1, 2, "3"]
                     }
@@ -36,19 +50,17 @@ window.onload = function(){
                 
                 "mouseup": {
                     
-                    object: test,
                     method: "hoi",
                     args: ["mouseup"]
                 }
             }
         });
         
-        bind({
-            
+        bind([{
             value: "attribute value",
+            pre: "my pre value ",
             element: document.getElementById("test"),
-            //selector: "#test",
             attr: "class"
-        });
+        }]);
     });
 };
