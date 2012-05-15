@@ -54,6 +54,18 @@ define(function() {
         }
     };
     
+    function addEvent(element, event, config) {
+        
+        element.addEventListener(event, (function(object, method, args) {
+            
+            return function() {
+                
+                object[method].apply(object, args);
+            };
+            
+        })(config.object, config.method, config.args), false);
+    }
+    
     return function(config) {
         
         /*
@@ -72,18 +84,29 @@ define(function() {
             post: ".jpg",
             events: {
                 
-                "click": [
-                    
+                "mousedown": [
+                    {
+                        object: myClass,
+                        method: "myFunction1",
+                        args: [1, 2, "3"]
+                    }
                 ],
                 
-                "error": []
+                "mouseup": {
+                    
+                    object: myClass,
+                    method: "myFunction2",
+                    args: ["xyz"]
+                }
+                
+                //"error": []
             },
             attr: "class"
         };
         */
         
         //check mandatory config attributes
-        if (typeof config === "object" && (typeof config.value === "string" && typeof config.value === "number") || typeof config.event === "object") {
+        if (typeof config === "object" && (typeof config.value === "string" || typeof config.value === "number" || typeof config.event === "object")) {
             
             //set element to the document instance if element is not a DOM element
             if (!(config.element instanceof Document || config.element instanceof Element)) {
@@ -108,14 +131,21 @@ define(function() {
                 }
             }
             
+            //add events to dom elements
             if (typeof config.events === "object") {
                 
-                // TODO bind events
                 for (var event in config.events) {
                     
-                    for (var i = 0, l = config.events.length; i < l; ++i) {
+                    if (config.events[event] instanceof Array) {
                         
-                        config.element.addEventListener(event, config.events[event][i], false);
+                        for (var i = 0, l = config.events[event].length; i < l; ++i) {
+                            
+                            addEvent(config.element, event, config.events[event][i]);
+                        }
+                    }
+                    else {
+                        
+                        addEvent(config.element, event, config.events[event]);
                     }
                 }
             }
@@ -129,7 +159,7 @@ define(function() {
                         
                         if (filters[filter]) {
                             
-                            config.value = filters[filter](config.value, filters[filter]);
+                            config.value = filters[filter](config.value, config.filters[filter]);
                         }
                     }
                 }
