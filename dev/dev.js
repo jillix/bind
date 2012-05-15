@@ -45,7 +45,7 @@ window.onload = function(){
         
         bind({
             
-            value: "trucken",
+            value: "attribute value",
             element: document.getElementById("test"),
             attr: "class"
         });
