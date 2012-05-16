@@ -1,6 +1,5 @@
 define(function() {
     
-    // TODO create filters
     // TODO load filters on demand
     var filters = {
         
@@ -54,18 +53,14 @@ define(function() {
         }
     };
     
-    // TODO remove event function
+    // TODO create removeEvent function
     // TODO checke memory usage
     function addEvent(element, event, config) {
         
-        var handler = (function(object, method, args) {
+        var handler = function() {
             
-            return function() {
-                
-                object[method].apply(object, args);
-            };
-            
-        })(config.object, config.method, config.args);
+            config.object[config.method].apply(config.object, config.args);
+        };
         
         if (element.addEventListener) {
             
