@@ -1,7 +1,7 @@
 define(function() {
     
     // TODO load filters on demand
-    var filters = {
+    var Filters = {
         
         max: function(value, number) {
             
@@ -50,6 +50,14 @@ define(function() {
         float: function(value) {
             
             return parseFloat(value) || 0;
+        },
+        pre: function(value, content) {
+            
+            return content + value;
+        },
+        post: function(value, content) {
+            
+            return value + content;
         }
     };
     
@@ -59,7 +67,7 @@ define(function() {
         
         var handler = function() {
             
-            config.object[config.method].apply(config.object, config.args);
+            config.scope[config.method].apply(config.scope, config.args);
         };
         
         if (element.addEventListener) {
@@ -70,26 +78,71 @@ define(function() {
             
             element.attachEvent(event, handler);
         }
-    }   
+    }
+    
+    function mergeObjects(prio1, prio2) {
+        
+        for (var key in prio2) {
+            
+            if (prio2.hasOwnProperty(key)) {
+                
+                if (typeof prio1[key] === "object" || typeof prio1[key] === "undefined") {
+                    
+                    if (key !== "scope" && typeof prio2[key] === "object") {
+                        
+                        if (prio1[key] instanceof Array) {
+                            
+                            if (prio2[key] instanceof Array) {
+                            
+                                for (var i = 0, l = prio2[key].length; i < l; ++i) {
+                                    
+                                    prio1[key].push(prio2[key][i]);
+                                }
+                            }
+                            else {
+                                
+                                prio1[key].push(prio2[key]);
+                            }
+                        }
+                        else if (prio2[key] instanceof Array) {
+                            
+                            prio2[key].push(prio1[key]);
+                            
+                            prio1[key] = prio2[key];
+                        }
+                        else {
+                            
+                            if (!prio1[key]) {
+                                
+                                prio1[key] = {};
+                            }
+                            
+                            mergeObjects(prio1[key], prio2[key]);
+                        }
+                    }
+                    else if (typeof prio1[key] === "undefined") {
+                        
+                        prio1[key] = prio2[key];
+                    }
+                }
+            }
+        }
+        
+        return prio1;
+    }
     /*
     config = {
     
-        value: "i am the content", //mandatory!
-        element: Element, //mandatory!
+        value: "i am the content",  //mandatory!
+        element: Element,           //mandatory!
         selector: "",
-        filters: {
-            
-            fixed: 2,
-            max: 32,
-            min: 1,
-        },
-        pre: "./image/",
-        post: ".jpg",
+        attr: "class",
+        scope: {},
         events: {
             
             "mousedown": [
                 {
-                    object: myClass,
+                    scope: myClass,
                     method: "myFunction1",
                     args: [1, "two", {}, []],
                     useCapture: true //false is default
@@ -98,20 +151,32 @@ define(function() {
             
             "mouseup": {
                 
-                object: myClass,
+                scope: myClass,
                 method: "myFunction2",
                 args: ["xyz"]
             }
-            
-            //"error": []
         },
-        attr: "class"
+        filters: {
+            
+            fixed: 2,
+            max: 32,
+            min: 1,
+            pre: "./image/",
+            post: ".jpg"
+        }
     };
     */
     function Bind(config) {
         
+        if (typeof config !== "object") {
+            
+            return;
+        }
+        
+        config = mergeObjects(config, this);
+        
         //check mandatory config attributes
-        if (typeof config === "object" && (typeof config.value === "string" || typeof config.value === "number" || typeof config.event === "object")) {
+        if (typeof config.value === "string" || typeof config.value === "number" || typeof config.event === "object") {
             
             //set element to the document instance if element is not a DOM element
             if (!(config.element instanceof Document || config.element instanceof Element)) {
@@ -141,24 +206,18 @@ define(function() {
                 
                 for (var event in config.events) {
                     
-                    if (!config.events[event].object) {
-                        
-                        config.events[event].object = this.eventObject || {};
-                    }
-                    
                     if (config.events[event] instanceof Array) {
                         
                         for (var i = 0, l = config.events[event].length; i < l; ++i) {
                             
-                            if (!config.events[event][i].object) {
-                                
-                                config.events[event][i].object = this.eventObject || {};
-                            }
+                            config.events[event][i].scope = config.events[event][i].scope || config.scope;
                             
                             addEvent(config.element, event, config.events[event][i]);
                         }
                     }
                     else {
+                        
+                        config.events[event].scope = config.events[event].scope || config.scope;
                         
                         addEvent(config.element, event, config.events[event]);
                     }
@@ -168,19 +227,16 @@ define(function() {
             if (config.value) {
                 
                 //filter content
-                if (typeof config.filters === "object") {
+                if (typeof config.filters === "object" || this.filters) {
                     
                     for (var filter in config.filters) {
                         
-                        if (filters[filter]) {
+                        if (Filters[filter]) {
                             
-                            config.value = filters[filter](config.value, config.filters[filter]);
+                            config.value = Filters[filter](config.value, config.filters[filter]);
                         }
                     }
                 }
-                
-                //attach pre/post values
-                config.value = (config.pre || this.pre || "") + config.value + (config.post || this.post || "");
                 
                 //set content
                 if (typeof config.attr === "string") {
@@ -197,31 +253,16 @@ define(function() {
         return;
     }
     
-    /*
-    config = {
-        
-        eventObject: {},
-        pre: ""
-        post: ""
-    }
-    */
     return function(defaultConfig) {
         
         var bind = {};
         
-        if (defaultConfig.eventObject) {
+        if (typeof defaultConfig === "object") {
             
-            bind.eventObject = defaultConfig.eventObject;
-        }
-        
-        if (defaultConfig.pre) {
-            
-            bind.pre = defaultConfig.pre;
-        }
-        
-        if (defaultConfig.post) {
-            
-            bind.post = defaultConfig.post;
+            for (var option in defaultConfig) {
+                
+                bind[option] = defaultConfig[option];
+            }
         }
         
         return function(elementConfig) {
