@@ -1,1 +1,268 @@
-define(function(){function f(a,b,c){var d=function(){c.scope[c.method].apply(c.scope,c.args)};a.addEventListener?a.addEventListener(b,d,c.useCapture||!1):a.attachEvent&&a.attachEvent(b,d)}function g(a,b){for(var c in b)if(b.hasOwnProperty(c)&&("object"===typeof a[c]||"undefined"===typeof a[c]))if("scope"!==c&&"object"===typeof b[c])if(a[c]instanceof Array)if(b[c]instanceof Array)for(var d=0,e=b[c].length;d<e;++d)a[c].push(b[c][d]);else a[c].push(b[c]);else b[c]instanceof Array?(b[c].push(a[c]),a[c]=b[c]):(a[c]||(a[c]={}),g(a[c],b[c]));else"undefined"===typeof a[c]&&(a[c]=b[c]);return a}function h(a){a=g(a,this);if("undefined"!==typeof a.val||"object"===typeof a.events)if(a.elm instanceof Document||a.elm instanceof Element||(a.elm=document),!(a.elm instanceof Document&&"string"!==typeof a.query)){if("string"==typeof a.query&&(a.elm=a.elm.querySelector(a.query),!a.elm))return;if("object"===typeof a.events)for(var b in a.events)if(a.events[b]instanceof Array)for(var c=0,d=a.events[b].length;c<d;++c)a.events[b][c].scope=a.events[b][c].scope||a.scope,f(a.elm,b,a.events[b][c]);else a.events[b].scope=a.events[b].scope||a.scope,f(a.elm,b,a.events[b]);if(a.val){if("object"===typeof a.filters||this.filters)for(var e in a.filters)i[e]&&(a.val=i[e](a.val,a.filters[e]));"string"===typeof a.attr?a.elm.setAttribute(a.attr,a.val):a.elm.innerHTML=a.val}}}var i={max:function(a,b){return a>b?b:a},min:function(a,b){return a<b?b:a},fixed:function(a,b){return a.toFixed(b)},maxChars:function(a,b){return a.length>b?a.substr(0,b):a},minChars:function(a,b){return a.length<b?"":a},"int":function(a,b){return parseInt(a,b||10)||0},"float":function(a){return parseFloat(a)||0},pre:function(a,b){return b+a},post:function(a,b){return a+b}};return function(a){var b=a||{};return function(a){if(a instanceof Array)for(var d=0,e=a.length;d<e;++d)h.call(b,a[d]);else h.call(b,a)}}});
+define(function() {
+    
+    // TODO load filters on demand
+    var Filters = {
+        
+        'max': function(value, number) {
+            
+            if (value > number) {
+                
+                return number;
+            }
+            
+            return value;
+        },
+        'min': function(value, number) {
+            
+            if (value < number) {
+                
+                return number;
+            }
+            
+            return value;
+        },
+        'fixed': function(value, digits) {
+            
+            return value.toFixed(digits);
+        },
+        'maxChars': function(value, number) {
+            
+            if (value.length > number) {
+                
+                return value.substr(0, number);
+            }
+            
+            return value;
+        },
+        'minChars': function(value, number) {
+            
+            if (value.length < number) {
+                
+                return "";
+            }
+            
+            return value;
+        },
+        'int': function(value, radix) {
+            
+            return parseInt(value, radix || 10) || 0;
+        },
+        'float': function(value) {
+            
+            return parseFloat(value) || 0;
+        },
+        'pre': function(value, content) {
+            
+            return content + value;
+        },
+        'post': function(value, content) {
+            
+            return value + content;
+        }
+    };
+    
+    // TODO create removeEvent function
+    // TODO checke memory usage
+    function addEvent(element, event, config) {
+        
+        var handler = function() {
+            
+            config.scope[config.method].apply(config.scope, config.args);
+        };
+        
+        if (element.addEventListener) {
+            
+            element.addEventListener(event, handler, config.useCapture || false);
+        }
+        else if (element.attachEvent) {
+            
+            element.attachEvent(event, handler);
+        }
+    }
+    
+    function mergeObjects(prio1, prio2) {
+        
+        for (var key in prio2) {
+            
+            if (prio2.hasOwnProperty(key)) {
+                
+                if (typeof prio1[key] === "object" || typeof prio1[key] === "undefined") {
+                    
+                    if (key !== "scope" && typeof prio2[key] === "object") {
+                        
+                        if (prio1[key] instanceof Array) {
+                            
+                            if (prio2[key] instanceof Array) {
+                            
+                                for (var i = 0, l = prio2[key].length; i < l; ++i) {
+                                    
+                                    prio1[key].push(prio2[key][i]);
+                                }
+                            }
+                            else {
+                                
+                                prio1[key].push(prio2[key]);
+                            }
+                        }
+                        else if (prio2[key] instanceof Array) {
+                            
+                            prio2[key].push(prio1[key]);
+                            
+                            prio1[key] = prio2[key];
+                        }
+                        else {
+                            
+                            if (!prio1[key]) {
+                                
+                                prio1[key] = {};
+                            }
+                            
+                            mergeObjects(prio1[key], prio2[key]);
+                        }
+                    }
+                    else if (typeof prio1[key] === "undefined") {
+                        
+                        prio1[key] = prio2[key];
+                    }
+                }
+            }
+        }
+        
+        return prio1;
+    }
+    /*
+    config = {
+    
+        val: "i am the content",
+        elm: Element,
+        query: ".class > li",
+        attr: "class",
+        scope: {},
+        events: {
+            
+            mousedown: [
+                {
+                    scope: myClass,
+                    method: "myFunction1",
+                    args: [1, "two", {}, []],
+                    useCapture: true //false is default
+                }
+            ],
+            
+            mouseup: {
+                
+                scope: myClass,
+                method: "myFunction2",
+                args: ["xyz"]
+            }
+        },
+        filters: {
+            
+            fixed: 2,
+            max: 32,
+            min: 1,
+            pre: "./image/",
+            post: ".jpg"
+        }
+    };
+    */
+    function Bind(config) {
+        
+        config = mergeObjects(config, this);
+        
+        //check mandatory config attributes
+        if (typeof config.val !== "undefined" || typeof config.events === "object") {
+            
+            //set element to the document instance if element is not a DOM element
+            if (!(config.elm instanceof Document || config.elm instanceof Element)) {
+                
+                config.elm = document;
+            }
+            
+            //a selector is required if element is the document instance
+            if (config.elm instanceof Document && typeof config.query !== "string") {
+                
+                return;
+            }
+            
+            //get the child element, if selector is given
+            if (typeof config.query == "string") {
+                
+                config.elm = config.elm.querySelector(config.query);
+                
+                if (!config.elm) {
+                    
+                    return;
+                }
+            }
+            
+            //add events to dom elements
+            if (typeof config.events === "object") {
+                
+                for (var event in config.events) {
+                    
+                    if (config.events[event] instanceof Array) {
+                        
+                        for (var i = 0, l = config.events[event].length; i < l; ++i) {
+                            
+                            config.events[event][i].scope = config.events[event][i].scope || config.scope;
+                            
+                            addEvent(config.elm, event, config.events[event][i]);
+                        }
+                    }
+                    else {
+                        
+                        config.events[event].scope = config.events[event].scope || config.scope;
+                        
+                        addEvent(config.elm, event, config.events[event]);
+                    }
+                }
+            }
+            
+            if (config.val) {
+                
+                //filter content
+                if (typeof config.filters === "object" || this.filters) {
+                    
+                    for (var filter in config.filters) {
+                        
+                        if (Filters[filter]) {
+                            
+                            config.val = Filters[filter](config.val, config.filters[filter]);
+                        }
+                    }
+                }
+                
+                //set content
+                if (typeof config.attr === "string") {
+                    
+                    config.elm.setAttribute(config.attr, config.val);
+                }
+                else {
+                    
+                    config.elm.innerHTML = config.val;
+                }
+            }
+        }
+    }
+    
+    return function(defaultConfig) {
+        
+        var bind = defaultConfig || {};
+        
+        return function(elementConfig) {
+            
+            if (elementConfig instanceof Array) {
+                
+                for (var i = 0, l = elementConfig.length; i < l; ++i) {
+                    
+                    Bind.call(bind, elementConfig[i]);
+                }
+            }
+            else {
+                
+                Bind.call(bind, elementConfig);
+            }
+        };
+    };
+});
