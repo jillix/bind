@@ -1,3 +1,39 @@
+/*
+config = {
+    
+    val: "i am the content",
+    elm: Element,
+    query: ".class > li",
+    attr: "class",
+    scope: {},
+    events: {
+        
+        mousedown: [
+            {
+                scope: myClass,
+                method: "myFunction1",
+                args: [1, "two", {}, []],
+                useCapture: true //false is default
+            }
+        ],
+        
+        mouseup: {
+            
+            scope: myClass,
+            method: "myFunction2",
+            args: ["xyz"]
+        }
+    },
+    filters: {
+        
+        fixed: 2,
+        max: 32,
+        min: 1,
+        pre: "./image/",
+        post: ".jpg"
+    }
+};
+*/
 define(function() {
     
     // TODO load filters on demand
@@ -62,7 +98,7 @@ define(function() {
     };
     
     // TODO create removeEvent function
-    // TODO checke memory usage
+    // TODO check memory usage
     function addEvent(element, event, config) {
         
         var handler = function() {
@@ -80,95 +116,9 @@ define(function() {
         }
     }
     
-    function mergeObjects(prio1, prio2) {
-        
-        for (var key in prio2) {
-            
-            if (prio2.hasOwnProperty(key)) {
-                
-                if (typeof prio1[key] === "object" || typeof prio1[key] === "undefined") {
-                    
-                    if (key !== "scope" && typeof prio2[key] === "object") {
-                        
-                        if (prio1[key] instanceof Array) {
-                            
-                            if (prio2[key] instanceof Array) {
-                            
-                                for (var i = 0, l = prio2[key].length; i < l; ++i) {
-                                    
-                                    prio1[key].push(prio2[key][i]);
-                                }
-                            }
-                            else {
-                                
-                                prio1[key].push(prio2[key]);
-                            }
-                        }
-                        else if (prio2[key] instanceof Array) {
-                            
-                            prio2[key].push(prio1[key]);
-                            
-                            prio1[key] = prio2[key];
-                        }
-                        else {
-                            
-                            if (!prio1[key]) {
-                                
-                                prio1[key] = {};
-                            }
-                            
-                            mergeObjects(prio1[key], prio2[key]);
-                        }
-                    }
-                    else if (typeof prio1[key] === "undefined") {
-                        
-                        prio1[key] = prio2[key];
-                    }
-                }
-            }
-        }
-        
-        return prio1;
-    }
-    /*
-    config = {
-    
-        val: "i am the content",
-        elm: Element,
-        query: ".class > li",
-        attr: "class",
-        scope: {},
-        events: {
-            
-            mousedown: [
-                {
-                    scope: myClass,
-                    method: "myFunction1",
-                    args: [1, "two", {}, []],
-                    useCapture: true //false is default
-                }
-            ],
-            
-            mouseup: {
-                
-                scope: myClass,
-                method: "myFunction2",
-                args: ["xyz"]
-            }
-        },
-        filters: {
-            
-            fixed: 2,
-            max: 32,
-            min: 1,
-            pre: "./image/",
-            post: ".jpg"
-        }
-    };
-    */
     function Bind(config) {
         
-        config = mergeObjects(config, this);
+        config = N.merge(config, this);
         
         //check mandatory config attributes
         if (typeof config.val !== "undefined" || typeof config.events === "object") {
