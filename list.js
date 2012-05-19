@@ -1,4 +1,36 @@
-define(["adioo/bind/main"], function(Bind) {
+/*
+config = {
+    
+    inst: {}, //Module instance
+    target: Element, //DOM reference
+    itemTag: "li",
+    itemHTML: "<span class='name'></span><img class='edit' src='edit.png'/>",
+    source: {
+        name: "getMyData",
+        //link options
+    }
+    
+    //not yet implemented
+    i18n: false, //true is default,
+    addItem: "#addItemButton",
+    removeItem: "#removeItemButton",
+    paging: 33,
+    search: [
+        {
+            elm: "#searchField",
+            ??
+        }
+    ]
+}
+
+// TODO:
+- locale change
+- add item
+- remove item
+- paging
+- search data
+*/
+define(["./bind"], function(Bind) {
     
     var List = {
         
@@ -74,38 +106,7 @@ define(["adioo/bind/main"], function(Bind) {
             this.target.appendChild(df);
         }
     };
-    /*
-        config = {
-            
-            inst: {}, //Module instance
-            target: Element, //DOM reference
-            itemTag: "li",
-            itemHTML: "<span class='name'></span><img class='edit' src='edit.png'/>",
-            source: {
-                name: "getMyData",
-                //link options
-            }
-            
-            //not yet implemented
-            i18n: false, //true is default,
-            addItem: "#addItemButton",
-            removeItem: "#removeItemButton",
-            paging: 33,
-            search: [
-                {
-                    elm: "#searchField",
-                    ??
-                }
-            ]
-        }
-        
-        // TODO:
-        - locale change
-        - add item
-        - remove item
-        - paging
-        - search data
-    */
+    
     return function(config) {
         
         if (!config.inst || !(config.target instanceof Element)) {
