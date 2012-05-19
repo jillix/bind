@@ -12,47 +12,46 @@ config = {
         name: "operationName",
         path: "",
         data: {}
-    }
+    },
+    bind: [
+        {
+            val: "Logout",
+            query: "#logout"
+            events: {
+                
+                mouseup: {
+                    
+                    method: "logout",
+                    args: ["/route/to/public/page"]
+                }
+            }
+        },
+        {
+            val: "DE",
+            query: "#i18n_de"
+            events: {
+                
+                mouseup: {
+                    
+                    method: "i18n",
+                    args: ["de"]
+                }
+            }
+        },
+        {
+            val: "EN",
+            query: "#i18n_en"
+            events: {
+                
+                mouseup: {
+                    
+                    method: "i18n",
+                    args: ["en"]
+                }
+            }
+        }
+    ]
 }
-
-result = [
-    {
-        val: "Logout",
-        query: "#logout"
-        events: {
-            
-            mouseup: {
-                
-                method: "logout",
-                args: ["/route/to/public/page"]
-            }
-        }
-    },
-    {
-        val: "DE",
-        query: "#i18n_de"
-        events: {
-            
-            mouseup: {
-                
-                method: "i18n",
-                args: ["de"]
-            }
-        }
-    },
-    {
-        val: "EN",
-        query: "#i18n_en"
-        events: {
-            
-            mouseup: {
-                
-                method: "i18n",
-                args: ["en"]
-            }
-        }
-    }
-]
 */
         
 define(["./bind"], function(Bind) {
@@ -78,7 +77,7 @@ define(["./bind"], function(Bind) {
         
         init: function(config) {
             
-            var self = this;
+            var layout = N.clone(Layout);
             
             //load modules
             if (config.modules) {
@@ -95,25 +94,26 @@ define(["./bind"], function(Bind) {
                 document.title = config.title;
             }
             
-            //get data from source
-            if (config.source) {
+            //bind data
+            if (config.source || config.data) {
                 
-                var data;
+                var bind = Bind({elm: this.$, scope: layout});
                 
-                if (config.source.data || config.source.path) {
+                if (config.data) {
                     
-                    data = config.source;
-                    delete data.name;
+                    bind(config.data);
                 }
                 
-                N.link(config,source.name, data, function(err, result) {
-                    
-                    if (!err && result) {
+                if (config.source) {
+                
+                    N.link(config.source, function(err, result) {
                         
-                        //bind data/events to html
-                        Bind({elm: self.$, scope: Layout})(result);
-                    }
-                });
+                        if (!err && result) {
+                            
+                            bind(result);
+                        }
+                    });
+                }
             }
         }
     };
