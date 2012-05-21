@@ -8,6 +8,13 @@ config = {
     source: {
         name: "getMyData",
         //link options
+    },
+    bind: {
+        
+        events: {
+            
+            
+        }
     }
     
     //not yet implemented
@@ -83,6 +90,10 @@ define(["./bind"], function(Bind) {
             
             var df = document.createDocumentFragment();
             
+            console.log(this);
+            
+            var bind = Bind({scope: this.scope || this.inst});
+            
             for (var i = 0, l = data.length; i < l; ++i) {
                 
                 var item = document.createElement(this.itemTag);
@@ -92,10 +103,9 @@ define(["./bind"], function(Bind) {
                     item.innerHTML = this.itemHTML;
                 }
                 
-                var bind = Bind({elm: item, scope: this.inst});
-                
                 for (var n = 0, a = data[i].length; n < a; ++n) {
                     
+                    data[i][n].elm = item;
                     bind(data[i][n]);
                 }
                 
