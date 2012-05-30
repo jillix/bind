@@ -34,6 +34,8 @@ config = {
     }
 };
 */
+"use strict";
+
 define(function() {
     
     // TODO load filters on demand
@@ -190,7 +192,7 @@ define(function() {
                 }
                 else {
                     
-                    config.elm.innerHTML = config.val;
+                    config.elm.textContent = config.val;
                 }
             }
         }
