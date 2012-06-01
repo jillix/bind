@@ -42,14 +42,14 @@ define(["./bind"], function(Bind) {
                 if (err) {
                     
                     self.obs.f("fetchError", err);
-                    return callback(err);
+                    return callback.call(self, err);
                 }
                 
                 self.render(result);
                 
                 self.obs.f("fetchDone", result);
                 
-                return callback(null, result);
+                return callback.call(self, null, result);
             });
         },
         
@@ -69,9 +69,9 @@ define(["./bind"], function(Bind) {
                 
                 var item = document.createElement(this.itemTag);
                 
-                if (this.itemHTML) {
+                if (data[i].itemHTML) {
                     
-                    item.innerHTML = this.itemHTML;
+                    item.innerHTML = data[i].itemHTML;
                 }
                 
                 if (data[i] instanceof Array) {
