@@ -2,6 +2,7 @@
 config = {
     
     val: "i am the content",
+    mod: "module_instance_id",
     elm: Element,
     query: ".class > li",
     attr: "class",
@@ -194,6 +195,11 @@ define(function() {
                     
                     config.elm.textContent = config.val;
                 }
+            }
+            
+            if (config.miid) {
+                
+                N.mod(config.elm, config.miid, config.onModuleLoad);
             }
         }
     }
