@@ -69,9 +69,9 @@ define(["./bind"], function(Bind) {
                 
                 var item = document.createElement(this.itemTag);
                 
-                if (data[i].itemHTML) {
+                if (data[i].itemHTML || this.itemHTML) {
                     
-                    item.innerHTML = data[i].itemHTML;
+                    item.innerHTML = data[i].itemHTML || this.itemHTML;
                 }
                 
                 if (data[i] instanceof Array) {
