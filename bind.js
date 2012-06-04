@@ -106,7 +106,12 @@ define(function() {
         
         var handler = function() {
             
-            config.scope[config.method].apply(config.scope, config.args);
+            if (config.scope[config.method]) {
+            
+                config.scope[config.method].apply(config.scope, config.args);
+            }
+            
+            return null;
         };
         
         if (element.addEventListener) {
@@ -121,6 +126,7 @@ define(function() {
     
     function Bind(config) {
         
+        // TODO find a better solution.. this is no good
         config = N.merge(config, this);
         
         //check mandatory config attributes
@@ -158,14 +164,14 @@ define(function() {
                         
                         for (var i = 0, l = config.events[event].length; i < l; ++i) {
                             
-                            config.events[event][i].scope = config.events[event][i].scope || config.scope;
+                            config.events[event][i].scope = config.events[event][i].scope || this.scope;
                             
                             addEvent(config.elm, event, config.events[event][i]);
                         }
                     }
                     else {
                         
-                        config.events[event].scope = config.events[event].scope || config.scope;
+                        config.events[event].scope = config.events[event].scope || this.scope;
                         
                         addEvent(config.elm, event, config.events[event]);
                     }
