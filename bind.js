@@ -37,68 +37,8 @@ config = {
 */
 "use strict";
 
-define(function() {
-    
-    // TODO load filters on demand
-    var Filters = {
-        
-        'max': function(value, number) {
-            
-            if (value > number) {
-                
-                return number;
-            }
-            
-            return value;
-        },
-        'min': function(value, number) {
-            
-            if (value < number) {
-                
-                return number;
-            }
-            
-            return value;
-        },
-        'fixed': function(value, digits) {
-            
-            return value.toFixed(digits);
-        },
-        'maxChars': function(value, number) {
-            
-            if (value.length > number) {
-                
-                return value.substr(0, number);
-            }
-            
-            return value;
-        },
-        'minChars': function(value, number) {
-            
-            if (value.length < number) {
-                
-                return "";
-            }
-            
-            return value;
-        },
-        'int': function(value, radix) {
-            
-            return parseInt(value, radix || 10) || 0;
-        },
-        'float': function(value) {
-            
-            return parseFloat(value) || 0;
-        },
-        'pre': function(value, content) {
-            
-            return content + value;
-        },
-        'post': function(value, content) {
-            
-            return value + content;
-        }
-    };
+// TODO load filters on demand
+define(["./filters"], function(Filters) {
     
     // TODO create removeEvent function
     // TODO check memory usage
@@ -124,10 +64,28 @@ define(function() {
         }
     }
     
+    function mergeBindConfigs(prio1, prio2) {
+        
+        for (var key in prio1) {
+            
+            if (prio1.hasOwnProperty(key)) {
+                
+                if (key === "events" || key === "filters") {
+                    
+                    mergeBindConfigs(prio1[key], !prio2[key] ? prio2[key] = {} : prio2[key]);
+                    continue;
+                }
+                
+                prio2[key] = prio1[key];
+            }
+        }
+        
+        return prio2;
+    }
+    
     function Bind(config) {
         
-        // TODO find a better solution.. this is no good
-        config = N.merge(config, this);
+        config = mergeBindConfigs(config, this);
         
         //check mandatory config attributes
         if (typeof config.val !== "undefined" || typeof config.events === "object") {
