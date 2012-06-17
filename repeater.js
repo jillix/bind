@@ -9,7 +9,7 @@ config = {
         name: "getMyData",
         //link options
     },
-    bind: {
+    bindConf: {
         
         events: {
             
@@ -62,9 +62,7 @@ define(["./bind"], function(Bind) {
             }
             
             var df = document.createDocumentFragment();
-            
-            var bind = Bind({scope: this});
-            
+                        
             for (var i = 0, l = data.length; i < l; ++i) {
                 
                 var item = document.createElement(this.itemTag);
@@ -81,19 +79,19 @@ define(["./bind"], function(Bind) {
                         for (var n = 0, a = data[i].length; n < a; ++n) {
                             
                             data[i][n].elm = item;
-                            bind(data[i][n]);
+                            this.bind(data[i][n]);
                         }
                     }
                     else {
                         
                         data[i][0].elm = item;
-                        bind(data[i][0]);
+                        this.bind(data[i][0]);
                     }
                 }
                 else {
                     
                     data[i].elm = item;
-                    bind(data[i]);
+                    this.bind(data[i]);
                 }
                 
                 df.appendChild(item);
@@ -106,6 +104,6 @@ define(["./bind"], function(Bind) {
     
     return function(object, config) {
         
-        return N.clone(Repeater, object, config);
+        return N.ext(Repeater, Bind(object), config);
     };
 });

@@ -1,30 +1,24 @@
 /*
-config = {
+bindConf = {
     
-    val: "i am the content",
-    mod: "module_instance_id",
-    elm: Element,
-    query: ".class > li",
+    val: "content",
     attr: "class",
-    scope: {},
-    events: {
+    query: ".class > span",
+    eventProperties: {
         
-        mousedown: [
-            {
-                scope: myClass,
-                method: "myFunction1",
-                args: [1, "two", {}, []],
-                useCapture: true //false is default
-            }
-        ],
-        
-        mouseup: {
-            
-            scope: myClass,
-            method: "myFunction2",
-            args: ["xyz"]
-        }
+        event: "mouseup",
+        method: "myFunction1",
+        args: [1, "two", {}, []],
+        useCapture: true/false
     },
+    defEvents: [
+        {
+            event: "mousedown",
+            method: "myFunction1",
+            args: [1, "two", {}, []],
+            useCapture: true //false is default
+        }
+    ],
     filters: {
         
         fixed: 2,
@@ -34,6 +28,30 @@ config = {
         post: ".jpg"
     }
 };
+
+data = {
+    
+    val: "i am the content",
+    elm: Element,
+    query: ".class > li",
+    attr: "class",
+    events: [
+        {
+            event: "mousedown",
+            method: "myFunction1",
+            args: [1, "two", {}, []],
+            useCapture: true //false is default
+        }
+    ],
+    filters: {
+        
+        fixed: 2,
+        max: 32,
+        min: 1,
+        pre: "./image/",
+        post: ".jpg"
+    }
+}
 */
 "use strict";
 
@@ -42,25 +60,47 @@ define(["./filters"], function(Filters) {
     
     // TODO create removeEvent function
     // TODO check memory usage
-    function addEvent(element, event, config) {
+    function addEvent(scope, element, config) {
         
-        var handler = function() {
+        if (scope.bindConf && scope.bindConf.eventProperties) {
             
-            if (config.scope[config.method]) {
-            
-                config.scope[config.method].apply(config.scope, config.args);
+            for (var prop in scope.bindConf.eventProperties) {
+                
+                if (prop === "args" && config[prop]) {
+                    
+                    for (var i in scope.bindConf.eventProperties[prop]) {
+                        
+                        config[prop].unshift(scope.bindConf.eventProperties[prop][i]);
+                    }
+                }
+                
+                if (!config[prop]) {
+                    
+                    config[prop] = scope.bindConf.eventProperties[prop];
+                }
             }
-            
-            return null;
-        };
-        
-        if (element.addEventListener) {
-            
-            element.addEventListener(event, handler, config.useCapture || false);
         }
-        else if (element.attachEvent) {
+        
+        if (scope[config.method]) {
+        
+            var handler = function() {
+                
+                if (scope[config.method]) {
+                    
+                    scope[config.method].apply(scope, config.args);
+                }
+                
+                return null;
+            };
             
-            element.attachEvent(event, handler);
+            if (element.addEventListener) {
+                
+                element.addEventListener(config.event, handler, config.useCapture || false);
+            }
+            else if (element.attachEvent) {
+                
+                element.attachEvent(config.event, handler);
+            }
         }
     }
     
@@ -70,9 +110,9 @@ define(["./filters"], function(Filters) {
             
             if (prio1.hasOwnProperty(key)) {
                 
-                if (key === "events" || key === "filters") {
+                if (key === "filters" && prio2[key]) {
                     
-                    mergeBindConfigs(prio1[key], !prio2[key] ? prio2[key] = {} : prio2[key]);
+                    mergeBindConfigs(prio1[key], prio2[key]);
                     continue;
                 }
                 
@@ -83,108 +123,105 @@ define(["./filters"], function(Filters) {
         return prio2;
     }
     
-    function Bind(config) {
+    function bindData(data) {
         
-        config = mergeBindConfigs(config, this);
+        if (this.bindConf) {
+            
+            data = mergeBindConfigs(data, this.bindConf);
+        }
         
-        //check mandatory config attributes
-        if (typeof config.val !== "undefined" || typeof config.events === "object") {
+        //check mandatory data attributes
+        if (typeof data.val !== "undefined" || typeof data.events === "object") {
             
             //set element to the document instance if element is not a DOM element
-            if (!(config.elm instanceof Document || config.elm instanceof Element)) {
+            if (!(data.elm instanceof Document || data.elm instanceof Element)) {
                 
-                config.elm = document;
+                data.elm = document;
             }
             
             //a selector is required if element is the document instance
-            if (config.elm instanceof Document && typeof config.query !== "string") {
+            if (data.elm instanceof Document && typeof data.query !== "string") {
                 
                 return;
             }
             
             //get the child element, if selector is given
-            if (typeof config.query == "string") {
+            if (typeof data.query == "string") {
                 
-                config.elm = config.elm.querySelector(config.query);
+                data.elm = data.elm.querySelector(data.query);
                 
-                if (!config.elm) {
+                if (!data.elm) {
                     
                     return;
                 }
             }
             
-            //add events to dom elements
-            if (typeof config.events === "object") {
+            //default events
+            if (this.bindConf && typeof this.bindConf.defEvents === "object") {
                 
-                for (var event in config.events) {
-                    
-                    if (config.events[event] instanceof Array) {
+                for (var i in this.bindConf.events) {
                         
-                        for (var i = 0, l = config.events[event].length; i < l; ++i) {
-                            
-                            config.events[event][i].scope = config.events[event][i].scope || this.scope;
-                            
-                            addEvent(config.elm, event, config.events[event][i]);
-                        }
-                    }
-                    else {
-                        
-                        config.events[event].scope = config.events[event].scope || this.scope;
-                        
-                        addEvent(config.elm, event, config.events[event]);
-                    }
+                    addEvent(this, data.elm, this.bindConf.defEvents[i]);
                 }
             }
             
-            if (config.val) {
+            //events
+            if (typeof data.events === "object") {
+                
+                for (var i in data.events) {
+                        
+                    addEvent(this, data.elm, data.events[i]);
+                }
+            }
+            
+            //content
+            if (typeof data.val !== "undefined") {
                 
                 //filter content
-                if (typeof config.filters === "object" || this.filters) {
+                if (typeof data.filters === "object") {
                     
-                    for (var filter in config.filters) {
+                    for (var filter in data.filters) {
                         
                         if (Filters[filter]) {
                             
-                            config.val = Filters[filter](config.val, config.filters[filter]);
+                            data.val = Filters[filter](data.val, data.filters[filter]);
                         }
                     }
                 }
                 
                 //set content
-                if (typeof config.attr === "string") {
+                if (typeof data.attr === "string") {
                     
-                    config.elm.setAttribute(config.attr, config.val);
+                    data.elm.setAttribute(data.attr, data.val);
                 }
                 else {
                     
-                    config.elm.textContent = config.val;
+                    data.elm.textContent = data.val;
                 }
-            }
-            
-            if (config.miid) {
-                
-                N.mod(config.elm, config.miid, config.onModuleLoad);
             }
         }
     }
     
-    return function(defaultConfig) {
+    var Bind = {
         
-        var bind = defaultConfig || {};
-        
-        return function(elementConfig) {
+        bind: function(data) {
             
-            if (elementConfig instanceof Array) {
+            if (data instanceof Array) {
                 
-                for (var i = 0, l = elementConfig.length; i < l; ++i) {
+                for (var i = 0, l = data.length; i < l; ++i) {
                     
-                    Bind.call(bind, elementConfig[i]);
+                    bindData.call(this, data[i]);
                 }
             }
             else {
                 
-                Bind.call(bind, elementConfig);
+                bindData.call(this, data);
             }
-        };
+        }
+    }
+    
+    return function(object, config) {
+        
+        return N.ext(Bind, object, config);
     };
 });
