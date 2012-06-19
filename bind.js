@@ -62,21 +62,21 @@ define(["./filters"], function(Filters) {
     // TODO check memory usage
     function addEvent(scope, element, config) {
         
-        if (scope.bindConf && scope.bindConf.eventProperties) {
+        if (scope.conf.bind && scope.conf.bind.eventProperties) {
             
-            for (var prop in scope.bindConf.eventProperties) {
+            for (var prop in scope.conf.bind.eventProperties) {
                 
                 if (prop === "args" && config[prop]) {
                     
-                    for (var i in scope.bindConf.eventProperties[prop]) {
+                    for (var i in scope.conf.bind.eventProperties[prop]) {
                         
-                        config[prop].unshift(scope.bindConf.eventProperties[prop][i]);
+                        config[prop].unshift(scope.conf.bind.eventProperties[prop][i]);
                     }
                 }
                 
                 if (!config[prop]) {
                     
-                    config[prop] = scope.bindConf.eventProperties[prop];
+                    config[prop] = scope.conf.bind.eventProperties[prop];
                 }
             }
         }
@@ -125,9 +125,9 @@ define(["./filters"], function(Filters) {
     
     function bindData(data) {
         
-        if (this.bindConf) {
+        if (this.conf.bind) {
             
-            data = mergeBindConfigs(data, this.bindConf);
+            data = mergeBindConfigs(data, this.conf.bind);
         }
         
         //check mandatory data attributes
@@ -157,11 +157,11 @@ define(["./filters"], function(Filters) {
             }
             
             //default events
-            if (this.bindConf && typeof this.bindConf.defEvents === "object") {
+            if (this.conf.bind && typeof this.conf.bind.defEvents === "object") {
                 
-                for (var i in this.bindConf.events) {
+                for (var i in this.conf.bind.events) {
                         
-                    addEvent(this, data.elm, this.bindConf.defEvents[i]);
+                    addEvent(this, data.elm, this.conf.bind.defEvents[i]);
                 }
             }
             
@@ -220,8 +220,8 @@ define(["./filters"], function(Filters) {
         }
     }
     
-    return function(object, config) {
+    return function(object) {
         
-        return N.ext(Bind, object, config);
+       return N.ext(Bind, object);
     };
 });

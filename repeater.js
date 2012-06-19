@@ -37,7 +37,7 @@ define(["./bind"], function(Bind) {
             self.obs.f("fetchStart");
             
             //get data
-            self.link(this.source, function(err, result) {
+            self.link(this.conf.source, function(err, result) {
                 
                 if (err) {
                     
@@ -65,11 +65,11 @@ define(["./bind"], function(Bind) {
                         
             for (var i = 0, l = data.length; i < l; ++i) {
                 
-                var item = document.createElement(this.itemTag);
+                var item = document.createElement(this.conf.repeater.itemTag);
                 
-                if (data[i].itemHTML || this.itemHTML) {
+                if (data[i].itemHTML || this.conf.repeater.itemHTML) {
                     
-                    item.innerHTML = data[i].itemHTML || this.itemHTML;
+                    item.innerHTML = data[i].itemHTML || this.conf.repeater.itemHTML;
                 }
                 
                 if (data[i] instanceof Array) {
@@ -97,13 +97,18 @@ define(["./bind"], function(Bind) {
                 df.appendChild(item);
             }
             
-            this.target.innerHTML = "";
-            this.target.appendChild(df);
+            this.conf.repeater.target.innerHTML = "";
+            this.conf.repeater.target.appendChild(df);
         }
     };
     
-    return function(object, config) {
+    return function(object) {
         
-        return N.ext(Repeater, Bind(object), config);
+        var repeater = N.ext(Repeater, Bind(object));
+        
+        repeater.conf.repeater.target = repeater.dom.querySelector(repeater.conf.repeater.target);
+        //repeater.repeater.itemHTML
+        //repeater.repeater.itemTag
+        return repeater;
     };
 });
