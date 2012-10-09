@@ -396,7 +396,7 @@ define(["./filters"], function(Filters) {
         }
     }
     
-    return bind(elm, options, context) {
+    function bind(elm, options, context) {
         
         var self = this || {};
         
@@ -459,4 +459,6 @@ define(["./filters"], function(Filters) {
         
         return elm.length == 1 ? elm[0] : elm;
     }
+    
+    return bind;
 });
