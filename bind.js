@@ -457,7 +457,7 @@ define(["./filters"], function(Filters) {
         
         updateDomElements.call(self, elm, options);
         
-        return elm.length == 1 ? elm[0] : elm;
+        return elm;
     }
     
     return bind;
