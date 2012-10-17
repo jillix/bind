@@ -412,7 +412,7 @@ define(["./filters"], function(Filters) {
         // check if an element was found
         if (!isElement(elm[0])) {
             
-            return;
+            return [];
         }
         
         // filter values
