@@ -16,7 +16,11 @@ define(["/jquery.js"], function() {
         dataContext = dataContext || {};
 
         var computeDataValue = function(dataType, dataContext) {
-            var value = dataContext[dataType.source] || "";
+            var dataSource = dataContext[dataType.source];
+            var value = dataSource || "";
+            if (value instanceof Object) {
+                value = value[self.lang] || "Missing value for '" + self.lang + "' language";
+            }
             // apply filters
             return value;
         };
