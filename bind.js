@@ -73,6 +73,8 @@ define(["/jquery.js"], function() {
                     if (curOn.emit) {
                         self.emit(curOn.emit);
                     }
+
+                    return false;
                 });
             }
         }
