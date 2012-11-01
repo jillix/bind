@@ -71,12 +71,17 @@ define(["/jquery.js"], function() {
                         handler(dataContext);
                     }
                     if (curOn.emit) {
-                        self.emit(curOn.emit);
+                        self.emit(curOn.emit, dataContext);
                     }
 
                     return false;
                 });
             }
+        }
+
+        for (var i in bind.listen) {
+            var curListen = bind.listen[i];
+            self.on(curListen.name, curListen.miid, self[curListen.handler]);
         }
     }
 });
