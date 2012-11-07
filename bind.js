@@ -53,10 +53,7 @@ define(["/jquery.js"], function() {
 
         for (var i in bind) {
             if (domManipulators[i]) {
-                for (var j in bind[i]) {
-                    domManipulators[i](target, context, bind[i], dataContext);
-                }
-                continue;
+                domManipulators[i](target, context, bind[i], dataContext);
             }
         }
 
