@@ -16,18 +16,19 @@ define(["/jquery.js"], function() {
         dataContext = dataContext || {};
 
         var computeDataValue = function(dataType, dataContext) {
-            var value = dataContext[dataType.source];
-            switch (typeof value) {
-                case "object":
-                    value = value[self.lang] || "Missing value for '" + self.lang + "' language";
-                    break;
-            }
-            // TODO apply filters
-            if (value === null || value === undefined) {
-                value = "";
+
+            var dataSource = dataContext[dataType.source];
+
+            if (dataSource === undefined || dataSource === null) {
+                value = "?" + dataType.source + "?";
+            } else if (typeof dataSource === "objects") {
+                value = value[self.lang] || "Missing value for '" + self.lang + "' language";
             } else {
-                value = value.toString();
+                var value = dataSource.toString();
             }
+
+            // TODO apply filters
+
             return value;
         };
 
