@@ -21,8 +21,8 @@ define(["/jquery.js"], function() {
 
             if (dataSource === undefined || dataSource === null) {
                 value = "?" + dataType.source + "?";
-            } else if (typeof dataSource === "objects") {
-                value = value[self.lang] || "Missing value for '" + self.lang + "' language";
+            } else if (typeof dataSource === "object") {
+                value = dataSource[self.lang] || "Missing value for '" + self.lang + "' language";
             } else {
                 var value = dataSource.toString();
             }
