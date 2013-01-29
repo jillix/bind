@@ -1,6 +1,6 @@
 define(["/jquery.js"], function() {
 
-    return function(bind, dataContext) {
+    function Bind(bind, dataContext) {
 
         var self = this;
 
@@ -15,16 +15,32 @@ define(["/jquery.js"], function() {
 
         dataContext = dataContext || {};
 
-        var computeDataValue = function(dataType, dataContext) {
+        function computeStringOrSourceDataValue(dataType, dataContext) {
+            var value = "";
+            if (typeof dataType === "string") {
+                value = dataType;
+            } else {
+                value = computeDataValue(dataType, dataContext);
+            }
+            return value;
+        }
 
-            var dataSource = dataContext[dataType.source];
+        function computeDataValue(dataType, dataContext) {
+
+            var dataSource = undefined;
+
+            if (dataType.source === "$") {
+                dataSource = dataContext.toString();
+            } else {
+                dataSource = dataContext[dataType.source];
+            }
 
             if (dataSource === undefined || dataSource === null) {
                 value = "?" + dataType.source + "?";
             } else if (typeof dataSource === "object") {
                 value = dataSource[self.lang] || "Missing value for '" + self.lang + "' language";
             } else {
-                var value = dataSource.toString();
+                value = dataSource.toString();
             }
 
             // TODO apply filters
@@ -33,28 +49,142 @@ define(["/jquery.js"], function() {
         };
 
         var domManipulators = {
+
             // add/modify attribute
+            /* Examples:
+             *  "binds": [
+             *      {
+             *          "attr": [
+             *              {
+             *                  "name": "the_attribute name",
+             *                  "value": "a_string_value"
+             *              },
+             *              {
+             *                  "name": "the_attribute name",
+             *                  "value": {
+             *                      "source": "the_field_name_from_a_source"
+             *                  }
+             *              },
+             *              ...
+             *          ]
+             *      }
+             *  ]
+             */
             attr: function(target, context, attrTypes, dataContext) {
                 for (var i in attrTypes) {
-                    var value = "";
-                    if (typeof attrTypes[i].value === "string") {
-                        value = attrTypes[i].value;
-                    } else {
-                        value = computeDataValue(attrTypes[i].value, dataContext);
-                    }
+                    var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
                     target.attr(attrTypes[i].name, value);
                 }
             },
 
-            // innerHTML
-            html: function(target, context, dataType, dataContext) {
-                var value = "";
-                if (typeof dataType === "string") {
-                    value = dataType;
-                } else {
-                    value = computeDataValue(dataType, dataContext);
+            // add class
+            /* Examples:
+             *  "binds": [
+             *      {
+             *          "addClass": [
+             *              "class_1",
+             *              "class_2",
+             *              ...
+             *          ]
+             *      }
+             *  ]
+             */
+            addClass: function(target, context, classes, dataContext) {
+                for (var i in classes) {
+                    target.addClass(classes[i]);
                 }
+            },
+
+            // remove class
+            /* Examples:
+             *  "binds": [
+             *      {
+             *          "removeClass": [
+             *              "class_1",
+             *              "class_2",
+             *              ...
+             *          ]
+             *      }
+             *  ]
+             */
+            removeClass: function(target, context, classes, dataContext) {
+                for (var i in classes) {
+                    target.removeClass(classes[i]);
+                }
+            },
+
+            // innerHTML
+            /* Examples:
+             *  "binds": [
+             *      {
+             *          "html": "a_string_value"
+             *      },
+             *
+             *      {
+             *          "html": {
+             *              "source": "the_field_name_from_a_source"
+             *          }
+             *      }
+             *  ]
+             */
+            html: function(target, context, dataType, dataContext) {
+                var value = computeStringOrSourceDataValue(dataType, dataContext);
                 target.html(value);
+            },
+
+            // repeat the target for each item in array source
+            /*
+             *   "binds": [
+             *       {
+             *           "repeat": {
+             *               "source": "the_array_name_from_a_source",
+             *               "binds": [
+             *                   ...
+             *               ]
+             *           }
+             *       }
+             *   ]
+             */
+            repeat: function(target, context, bindTemplate, dataContext) {
+
+                if (!target.length) {
+                    console.error("Empty bind 'repeat' target");
+                    return;
+                }
+
+                if (typeof dataContext !== "object" || !dataContext) {
+                    console.error("A bind 'repeat' can only be used with an object data context");
+                    return;
+                }
+
+                var sourceArray = dataContext[bindTemplate.source];
+
+                if (Object.prototype.toString.call(sourceArray) !== "[object Array]" ) {
+                    console.error("A bind 'repeat' did not find an array in the source field of the data context");
+                    return;
+                }
+
+                var template = target.clone();
+                var container = target.parent();
+
+                for (var i = 0; i < sourceArray.length; ++i) {
+
+                    var newDom = template.clone();
+
+                    if (!bindTemplate.binds || !bindTemplate.binds.length) {
+                        continue;
+                    }
+
+                    for (var j = 0; j < bindTemplate.binds.length; ++j) {
+                        var bind = bindTemplate.binds[j];
+                        bind.context = newDom;
+                        Bind.call(self, bind, sourceArray[i]);
+                    }
+
+                    container.append(newDom);
+                }
+
+                target.remove();
             }
         }
 
@@ -88,4 +218,6 @@ define(["/jquery.js"], function() {
             self.on(curListen.name, curListen.miid, self[curListen.handler]);
         }
     }
+
+    return Bind;
 });
