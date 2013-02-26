@@ -43,7 +43,9 @@ define(["/jquery.js"], function() {
                 value = dataSource.toString();
             }
 
-            // TODO apply filters
+            if (typeof self[dataType.filter] === "function") {
+                value = self[dataType.filter](value);
+            }
 
             return value;
         };
