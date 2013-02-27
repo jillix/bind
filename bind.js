@@ -44,7 +44,7 @@ define(["/jquery.js"], function() {
             }
 
             if (typeof self[dataType.filter] === "function") {
-                value = self[dataType.filter](value);
+                value = self[dataType.filter](self, dataContext, dataType.source, value);
             }
 
             return value;
@@ -140,6 +140,8 @@ define(["/jquery.js"], function() {
              *       {
              *           "repeat": {
              *               "source": "the_array_name_from_a_source",
+             *               "preFilter": "handler_name",
+             *               "postFilter": "handler_name",
              *               "binds": [
              *                   ...
              *               ]
@@ -169,6 +171,12 @@ define(["/jquery.js"], function() {
                 var template = target.clone();
                 var container = target.parent();
 
+                // run the pre-filtering handler
+                if (typeof self[bindTemplate.preFilter] === "function") {
+                    sourceArray = self[bindTemplate.preFilter](self, container, dataContext, bindTemplate.source, sourceArray);
+                }
+
+                // run the binds for each item
                 for (var i = 0; i < sourceArray.length; ++i) {
 
                     var newDom = template.clone();
@@ -184,6 +192,11 @@ define(["/jquery.js"], function() {
                     }
 
                     container.append(newDom);
+                }
+
+                // run the post-filtering handler
+                if (typeof self[bindTemplate.postFilter] === "function") {
+                    sourceArray = self[bindTemplate.postFilter](self, dataContext, bindTemplate.source, sourceArray, container);
                 }
 
                 target.remove();
