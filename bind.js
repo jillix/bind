@@ -38,7 +38,8 @@ define(["/jquery.js"], function() {
             if (dataSource === undefined || dataSource === null) {
                 value = "?" + dataType.source + "?";
             } else if (typeof dataSource === "object") {
-                value = dataSource[self.lang] || "Missing value for '" + self.lang + "' language";
+                var locale = M.getLocale();
+                value = dataSource[locale] || "Missing value for '" + locale + "' language";
             } else {
                 value = dataSource.toString();
             }
