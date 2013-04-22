@@ -1,5 +1,9 @@
 {
     "source": "github",
     "owner": "adioo",
-    "name": "bind"
+    "name": "bind",
+    "dependencies": [
+        "/main.js",
+        "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+    ]
 }
