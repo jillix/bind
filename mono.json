@@ -3,7 +3,7 @@
     "owner": "adioo",
     "name": "bind",
     "dependencies": [
-        "/main.js",
+        "/bind.js",
         "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
     ]
 }
