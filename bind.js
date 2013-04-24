@@ -43,8 +43,9 @@ module.exports = function (bind, dataContext) {
             value = dataSource.toString();
         }
 
-        if (typeof self[dataType.filter] === "function") {
-            value = self[dataType.filter](self, dataContext, dataType.source, value);
+        var filterFunction = self[dataType.filter] || window[dataType.filter];
+        if (typeof filterFunction === "function") {
+            value = filterFunction(self, dataContext, dataType.source, value);
         }
 
         return value;
@@ -172,8 +173,9 @@ module.exports = function (bind, dataContext) {
             var container = target.parent();
 
             // run the pre-filtering handler
-            if (typeof self[bindTemplate.preFilter] === "function") {
-                sourceArray = self[bindTemplate.preFilter](self, container, dataContext, bindTemplate.source, sourceArray);
+            var filterFunction = self[bindTemplate.preFilter] || window[bindTemplate.prefilter];
+            if (typeof filterFunction === "function") {
+                sourceArray = filterFunction(self, dataContext, bindTemplate.source, sourceArray, container);
             }
 
             // run the binds for each item
@@ -195,8 +197,9 @@ module.exports = function (bind, dataContext) {
             }
 
             // run the post-filtering handler
-            if (typeof self[bindTemplate.postFilter] === "function") {
-                sourceArray = self[bindTemplate.postFilter](self, dataContext, bindTemplate.source, sourceArray, container);
+            filterFunction = self[bindTemplate.postFilter] || window[bindTemplate.postFilter];
+            if (typeof filterFunction === "function") {
+                sourceArray = filterFunction(self, dataContext, bindTemplate.source, sourceArray, container);
             }
 
             target.remove();
