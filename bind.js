@@ -1,4 +1,20 @@
 
+function findFunction  (parent, dotNot) {
+    if (!dotNot) return undefined;
+    var splits = dotNot.split('.');
+    var func;
+    for (var i = 0; i < splits.length; i++) {
+        func = parent[splits[i]];
+        if (!func) return undefined;
+        if (typeof func === 'object') parent = func;
+    }
+    if (typeof func !== 'function') {
+        return undefined;
+    }
+
+    return func;
+}
+
 var Bind = module.exports = function (bind, dataContext) {
 
     var self = this;
@@ -43,7 +59,7 @@ var Bind = module.exports = function (bind, dataContext) {
             value = dataSource.toString();
         }
 
-        var filterFunction = self[dataType.filter] || window[dataType.filter];
+        var filterFunction = findFunction(self, dataType.filter) || findFunction(window, dataType.filter);
         if (typeof filterFunction === "function") {
             value = filterFunction(self, dataContext, dataType.source, value);
         }
@@ -153,19 +169,19 @@ var Bind = module.exports = function (bind, dataContext) {
         repeat: function(target, context, bindTemplate, dataContext) {
 
             if (!target.length) {
-                console.error("Empty bind 'repeat' target");
+                console.warn("Empty bind 'repeat' target");
                 return;
             }
 
             if (typeof dataContext !== "object" || !dataContext) {
-                console.error("A bind 'repeat' can only be used with an object data context");
+                console.warn("A bind 'repeat' can only be used with an object data context");
                 return;
             }
 
-            var sourceArray = dataContext[bindTemplate.source];
+            var sourceArray = dataContext[bindTemplate.source] || [];
 
             if (Object.prototype.toString.call(sourceArray) !== "[object Array]" ) {
-                console.error("A bind 'repeat' did not find an array in the source field of the data context");
+                console.warn("A bind 'repeat' did not find an array in the source field of the data context");
                 return;
             }
 
@@ -173,8 +189,8 @@ var Bind = module.exports = function (bind, dataContext) {
             var container = target.parent();
 
             // run the pre-filtering handler
-            var filterFunction = self[bindTemplate.preFilter] || window[bindTemplate.prefilter];
-            if (typeof filterFunction === "function") {
+            var filterFunction = findFunction(self, bindTemplate.preFilter) || findFunction(window, bindTemplate.prefilter);
+            if (filterFunction) {
                 sourceArray = filterFunction(self, dataContext, bindTemplate.source, sourceArray, container);
             }
 
@@ -197,8 +213,8 @@ var Bind = module.exports = function (bind, dataContext) {
             }
 
             // run the post-filtering handler
-            filterFunction = self[bindTemplate.postFilter] || window[bindTemplate.postFilter];
-            if (typeof filterFunction === "function") {
+            filterFunction = findFunction(self, bindTemplate.postFilter) || findFunction(window, bindTemplate.postFilter);
+            if (filterFunction) {
                 sourceArray = filterFunction(self, dataContext, bindTemplate.source, sourceArray, container);
             }
 
