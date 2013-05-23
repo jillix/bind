@@ -1,13 +1,23 @@
-
-function findFunction  (parent, dotNot) {
+function findValue (parent, dotNot) {
+    
     if (!dotNot) return undefined;
+    
     var splits = dotNot.split('.');
-    var func;
+    var value;
+
     for (var i = 0; i < splits.length; i++) {
-        func = parent[splits[i]];
-        if (!func) return undefined;
-        if (typeof func === 'object') parent = func;
+        value = parent[splits[i]];
+        if (!value) return undefined;
+        if (typeof value === 'object') parent = value;
     }
+
+    return value;
+}
+
+function findFunction (parent, dotNot) {
+
+    var func = findValue(parent, dotNot);
+
     if (typeof func !== 'function') {
         return undefined;
     }
@@ -47,7 +57,7 @@ var Bind = module.exports = function (bind, dataContext) {
         if (dataType.source === "$") {
             dataSource = dataContext.toString();
         } else {
-            dataSource = dataContext[dataType.source];
+            dataSource = findValue(dataContext, dataType.source);
         }
 
         if (dataSource === undefined || dataSource === null) {
@@ -252,4 +262,3 @@ var Bind = module.exports = function (bind, dataContext) {
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
-
