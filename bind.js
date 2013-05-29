@@ -241,19 +241,21 @@ var Bind = module.exports = function (bind, dataContext) {
     for (var i in bind.on) {
         var curOn = bind.on[i];
         if (curOn.handler || curOn.emit) {
-            target.on(curOn.name, function(event) {
-                event.stopPropagation();
+            (function (curOn) {
+                target.on(curOn.name, function(event) {
+                    event.stopPropagation();
 
-                var handler = self[curOn.handler];
-                if (typeof handler === "function") {
-                    handler(dataContext);
-                }
-                if (curOn.emit) {
-                    self.emit(curOn.emit, dataContext);
-                }
+                    var handler = self[curOn.handler];
+                    if (typeof handler === "function") {
+                        handler(dataContext);
+                    }
+                    if (curOn.emit) {
+                        self.emit(curOn.emit, dataContext);
+                    }
 
-                return false;
-            });
+                    return false;
+                });
+            })(curOn);
         }
     }
 
