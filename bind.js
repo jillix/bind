@@ -7,7 +7,7 @@ function findValue (parent, dotNot) {
 
     for (var i = 0; i < splits.length; i++) {
         value = parent[splits[i]];
-        if (!value) return undefined;
+        if (value === undefined) return undefined;
         if (typeof value === 'object') parent = value;
     }
 
