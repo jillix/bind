@@ -1,8 +1,7 @@
-"use strict";
-
+M.wrap('github/jillix/bind/v0.1.0/bind.js', function (require, module, exports) {
 // TODO lazy loading of filters
 // TODO lazy loading of plugins
-define(["./filters"], function(Filters) {
+    function findValue (parent, dotNot) {
     
     // execute a handler multiple times if params is an array.
     // if params is an object, execute handler once.
@@ -459,6 +458,11 @@ define(["./filters"], function(Filters) {
         
         return elm;
     }
-    
-    return bind;
-});
+
+    for (var i in bind.listen) {
+        var curListen = bind.listen[i];
+        self.on(curListen.name, curListen.miid, self[curListen.handler]);
+    }
+};
+
+return module; });
