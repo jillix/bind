@@ -458,11 +458,6 @@ M.wrap('github/jillix/bind/v0.1.0/bind.js', function (require, module, exports) 
         
         return elm;
     }
-
-    for (var i in bind.listen) {
-        var curListen = bind.listen[i];
-        self.on(curListen.name, curListen.miid, self[curListen.handler]);
-    }
 };
 
 return module; });
