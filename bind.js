@@ -2,13 +2,13 @@ function findValue (parent, dotNot) {
     
     if (!dotNot) return undefined;
     
-    var splits = dotNot.split('.');
+    var splits = dotNot.split(".");
     var value;
 
     for (var i = 0; i < splits.length; i++) {
         value = parent[splits[i]];
         if (value === undefined) return undefined;
-        if (typeof value === 'object') parent = value;
+        if (typeof value === "object") parent = value;
     }
 
     return value;
@@ -18,7 +18,7 @@ function findFunction (parent, dotNot) {
 
     var func = findValue(parent, dotNot);
 
-    if (typeof func !== 'function') {
+    if (typeof func !== "function") {
         return undefined;
     }
 
@@ -61,7 +61,11 @@ var Bind = module.exports = function (bind, dataContext) {
         }
 
         if (dataSource === undefined || dataSource === null) {
-            value = "?" + dataType.source + "?";
+            if (typeof dataType["default"] === "string") {
+                value = dataType["default"];
+            } else {
+                value = "?" + dataType.source + "?";
+            }
         } else if (typeof dataSource === "object") {
             var locale = M.getLocale();
             value = dataSource[locale] || "Missing value for '" + locale + "' language";
