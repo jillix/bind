@@ -7,19 +7,19 @@ Bind content and events to the DOM and create DOM Elements.
 
 ##### v0.1.2
 
-* added global functions support:
+* added global namespaced function support:
 
 ```json
 {
     "target": ".myClass",
     "on": [{
         "name": "click",
-        "handler": "globalFunctionName"
+        "handler": "global.function.name"
     }]
 }
 ```
 
-Where `globalFunctionName` is a function defined in `window` object.
+where `global.function.name` can be either a **module** namespaced function or a **global** namesaced function
 
 * added `args` support:
 
@@ -30,12 +30,13 @@ Where `globalFunctionName` is a function defined in `window` object.
         "name": "click",
         "handler": {
             "name": "globalFunctionName",
-            "args": [1]
+            "args": ["an argument"]
         }
     }]
 }
 ```
-The last argument is the `dataContext`.
+
+The `dataContext` will be appended to the given argument array.
 
 ##### v0.1.1
 
