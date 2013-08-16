@@ -1,7 +1,7 @@
 function findValue (parent, dotNot) {
-    
+
     if (!dotNot) return undefined;
-    
+
     var splits = dotNot.split(".");
     var value;
 
@@ -249,9 +249,19 @@ var Bind = module.exports = function (bind, dataContext) {
                 target.on(curOn.name, function(event) {
                     event.stopPropagation();
 
-                    var handler = self[curOn.handler];
+                    var name = curOn.handler;
+                    var args = [];
+
+                    if (name instanceof Object) {
+                        name = name.name;
+                        args = name.args;
+                    }
+
+                    var handler = findFunction(self, name) || findFunction(window, name);
+                    args.push(dataContext);
+
                     if (typeof handler === "function") {
-                        handler(dataContext);
+                        handler.apply(self, args);
                     }
                     if (curOn.emit) {
                         self.emit(curOn.emit, dataContext);
