@@ -21,7 +21,7 @@ Bind content and events to the DOM and create DOM Elements.
 
 where `global.function.name` can be either a **module** namespaced function or a **global** namesaced function
 
-* added `args` support:
+* added `args` support for `on` handlers:
 
 ```json
 {
