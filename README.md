@@ -8,7 +8,8 @@ Bind content and events to the DOM and create DOM Elements.
 ##### v0.1.2
 
 * added global functions support:
-```JSON
+
+```json
 {
     "target": ".myClass",
     "on": [{
@@ -21,7 +22,8 @@ Bind content and events to the DOM and create DOM Elements.
 Where `globalFunctionName` is a function defined in `window` object.
 
 * added `args` support:
-```JSOn
+
+```json
 {
     "target": ".myClass",
     "on": [{
