@@ -5,7 +5,7 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
-##### v0.1.1
+##### v0.1.2
 
 * added global functions support:
 ```JSON
