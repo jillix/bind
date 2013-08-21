@@ -253,8 +253,8 @@ var Bind = module.exports = function (bind, dataContext) {
                     var args = [];
 
                     if (name instanceof Object) {
+                        args = name.args || [];
                         name = name.name;
-                        args = name.args;
                     }
 
                     var handler = findFunction(self, name) || findFunction(window, name);

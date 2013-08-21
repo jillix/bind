@@ -5,6 +5,9 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.1.3
+* Fixed major issue in handling functions with arguments.
+
 ##### v0.1.2
 
 * added global functions support:
