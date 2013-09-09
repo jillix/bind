@@ -246,7 +246,13 @@ var Bind = module.exports = function (bind, dataContext) {
         var curOn = bind.on[i];
         if (curOn.handler || curOn.emit) {
             (function (curOn) {
-                target.on(curOn.name, function(event) {
+                var t = target;
+                var s = null;
+                if (curOn.delegated) {
+                    t = context;
+                    s = target.selector;
+                }
+                t.on(curOn.name, s,function(event) {
                     event.stopPropagation();
 
                     var name = curOn.handler;
@@ -278,3 +284,4 @@ var Bind = module.exports = function (bind, dataContext) {
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
+
