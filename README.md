@@ -5,6 +5,26 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.1.5
+
+* the filters now receive the original value (not a string representation of it)
+* the `html` bind object will convert values to strings and `undefined` and `null` to empty strings
+
+##### v0.1.4
+
+* added delegated event support in the `on` bind configuration:
+
+```json
+{
+    "target": ".myDynamicAddedElement",
+    "on": [{
+        "name": "click",
+        "delegated": true,
+        "handler": "myHandler"
+    }]
+}
+```
+
 ##### v0.1.3
 * Fixed major issue in handling functions with arguments.
 
