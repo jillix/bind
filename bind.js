@@ -54,6 +54,7 @@ var Bind = module.exports = function (bind, dataContext) {
 
         var dataSource = undefined;
 
+        // if the source is $ the value the data context will be considered the value
         if (dataType.source === "$") {
             dataSource = dataContext.toString();
         } else {
@@ -70,7 +71,7 @@ var Bind = module.exports = function (bind, dataContext) {
             var locale = M.getLocale();
             value = dataSource[locale] || "Missing value for '" + locale + "' language";
         } else {
-            value = dataSource.toString();
+            value = dataSource;
         }
 
         var filterFunction = findFunction(self, dataType.filter) || findFunction(window, dataType.filter);
@@ -162,6 +163,11 @@ var Bind = module.exports = function (bind, dataContext) {
          */
         html: function(target, context, dataType, dataContext) {
             var value = computeStringOrSourceDataValue(dataType, dataContext);
+            if (value === undefined || value === null) {
+                value = '';
+            } else {
+                value = value.toString();
+            }
             target.html(value);
         },
 
