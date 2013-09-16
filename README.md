@@ -5,6 +5,24 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.1.6
+* removed unused file filters.js
+* send event variable from event handler as first parameter from `args` array
+* call anonymous and private functions
+
+```JS
+var binds = [{
+    "target": ".myElement",
+    "on": [{
+        "name": "click",
+        "handler": function () {
+            alert("I am here only in Bind v0.1.6 and higher.");
+        }
+    }]
+}];
+// run binds
+```
+
 ##### v0.1.5
 
 * the filters now receive the original value (not a string representation of it)

@@ -264,17 +264,25 @@ var Bind = module.exports = function (bind, dataContext) {
                     var name = curOn.handler;
                     var args = [];
 
-                    if (name instanceof Object) {
+                    if (name.constructor === Object) {
                         args = name.args || [];
                         name = name.name;
                     }
 
-                    var handler = findFunction(self, name) || findFunction(window, name);
+                    args.push(event);
                     args.push(dataContext);
+
+                    if (typeof name === "function") {
+                        name.apply(self, args);
+                        return false;
+                    }
+
+                    var handler = findFunction(self, name) || findFunction(window, name);
 
                     if (typeof handler === "function") {
                         handler.apply(self, args);
                     }
+
                     if (curOn.emit) {
                         self.emit(curOn.emit, dataContext);
                     }
@@ -290,4 +298,3 @@ var Bind = module.exports = function (bind, dataContext) {
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
-
