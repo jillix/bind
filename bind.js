@@ -264,7 +264,7 @@ var Bind = module.exports = function (bind, dataContext) {
                     var name = curOn.handler;
                     var args = [];
 
-                    if (name.constructor === Object) {
+                    if (typeof name === Object) {
                         args = name.args || [];
                         name = name.name;
                     }
