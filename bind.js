@@ -106,6 +106,7 @@ var Bind = module.exports = function (bind, dataContext) {
          */
         attr: function(target, context, attrTypes, dataContext) {
             for (var i in attrTypes) {
+                if (!attrTypes.hasOwnProperty(i)) return;
                 var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
                 target.attr(attrTypes[i].name, value);
             }
@@ -125,6 +126,7 @@ var Bind = module.exports = function (bind, dataContext) {
          */
         addClass: function(target, context, classes, dataContext) {
             for (var i in classes) {
+                if (!classes.hasOwnProperty(i)) return;
                 target.addClass(classes[i]);
             }
         },
@@ -143,6 +145,7 @@ var Bind = module.exports = function (bind, dataContext) {
          */
         removeClass: function(target, context, classes, dataContext) {
             for (var i in classes) {
+                if (!classes.hasOwnProperty(i)) return;
                 target.removeClass(classes[i]);
             }
         },
@@ -243,12 +246,16 @@ var Bind = module.exports = function (bind, dataContext) {
     }
 
     for (var i in bind) {
+        if (!bind.hasOwnProperty(i)) return;
+
         if (domManipulators[i]) {
             domManipulators[i](target, context, bind[i], dataContext);
         }
     }
 
     for (var i in bind.on) {
+        if (!bind.on.hasOwnProperty(i)) return;
+
         var curOn = bind.on[i];
         if (curOn.handler || curOn.emit) {
             (function (curOn) {
@@ -294,6 +301,8 @@ var Bind = module.exports = function (bind, dataContext) {
     }
 
     for (var i in bind.listen) {
+        if (!bind.listen.hasOwnProperty(i)) return;
+
         var curListen = bind.listen[i];
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
