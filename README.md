@@ -5,6 +5,9 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.1.7
+ - added "if (!obj.hasOwnProperty(key)) return;" to object for loops
+
 ##### v0.1.6
 * removed unused file filters.js
 * send event variable from event handler as first parameter from `args` array
