@@ -105,8 +105,7 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         attr: function(target, context, attrTypes, dataContext) {
-            for (var i in attrTypes) {
-                if (!attrTypes.hasOwnProperty(i)) return;
+            for (var i = 0; l < attrTypes.length; ++i) {
                 var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
                 target.attr(attrTypes[i].name, value);
             }
@@ -125,8 +124,7 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         addClass: function(target, context, classes, dataContext) {
-            for (var i in classes) {
-                if (!classes.hasOwnProperty(i)) return;
+            for (var i = 0; l < classes.length; ++i) {
                 target.addClass(classes[i]);
             }
         },
@@ -144,8 +142,7 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         removeClass: function(target, context, classes, dataContext) {
-            for (var i in classes) {
-                if (!classes.hasOwnProperty(i)) return;
+            for (var i = 0; l < classes.length; ++i) {
                 target.removeClass(classes[i]);
             }
         },
@@ -245,65 +242,65 @@ var Bind = module.exports = function (bind, dataContext) {
         }
     }
 
-    for (var i in bind) {
-        if (!bind.hasOwnProperty(i)) return;
+    for (var key in bind) {
+        if (!bind.hasOwnProperty(key)) return;
 
-        if (domManipulators[i]) {
-            domManipulators[i](target, context, bind[i], dataContext);
+        if (domManipulators[key]) {
+            domManipulators[key](target, context, bind[key], dataContext);
         }
     }
 
-    for (var i in bind.on) {
-        if (!bind.on.hasOwnProperty(i)) return;
-
-        var curOn = bind.on[i];
-        if (curOn.handler || curOn.emit) {
-            (function (curOn) {
-                var t = target;
-                var s = null;
-                if (curOn.delegated) {
-                    t = context;
-                    s = target.selector;
-                }
-                t.on(curOn.name, s,function(event) {
-                    event.stopPropagation();
-
-                    var name = curOn.handler;
-                    var args = [];
-
-                    if (typeof name === "object") {
-                        args = name.args || [];
-                        name = name.name;
+    if (bind.on) {
+        for (var i = 0, l = bind.on.length; i < l; ++i) {
+            var curOn = bind.on[i];
+            if (curOn.handler || curOn.emit) {
+                (function (curOn) {
+                    var t = target;
+                    var s = null;
+                    if (curOn.delegated) {
+                        t = context;
+                        s = target.selector;
                     }
-
-                    args.push(event);
-                    args.push(dataContext);
-
-                    if (typeof name === "function") {
-                        name.apply(self, args);
+                    t.on(curOn.name, s,function(event) {
+                        event.stopPropagation();
+    
+                        var name = curOn.handler;
+                        var args = [];
+    
+                        if (typeof name === "object") {
+                            args = name.args || [];
+                            name = name.name;
+                        }
+    
+                        args.push(event);
+                        args.push(dataContext);
+    
+                        if (typeof name === "function") {
+                            name.apply(self, args);
+                            return false;
+                        }
+    
+                        var handler = findFunction(self, name) || findFunction(window, name);
+    
+                        if (typeof handler === "function") {
+                            handler.apply(self, args);
+                        }
+    
+                        if (curOn.emit) {
+                            self.emit(curOn.emit, dataContext);
+                        }
+    
                         return false;
-                    }
-
-                    var handler = findFunction(self, name) || findFunction(window, name);
-
-                    if (typeof handler === "function") {
-                        handler.apply(self, args);
-                    }
-
-                    if (curOn.emit) {
-                        self.emit(curOn.emit, dataContext);
-                    }
-
-                    return false;
-                });
-            })(curOn);
+                    });
+                })(curOn);
+            }
         }
     }
 
-    for (var i in bind.listen) {
-        if (!bind.listen.hasOwnProperty(i)) return;
+    for (var key in bind.listen) {
+        if (!bind.listen.hasOwnProperty(key)) return;
 
-        var curListen = bind.listen[i];
+        var curListen = bind.listen[key];
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
