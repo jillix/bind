@@ -243,7 +243,7 @@ var Bind = module.exports = function (bind, dataContext) {
     }
 
     for (var key in bind) {
-        if (!bind.hasOwnProperty(key)) return;
+        if (!bind.hasOwnProperty(key)) continue;
 
         if (domManipulators[key]) {
             domManipulators[key](target, context, bind[key], dataContext);
@@ -298,9 +298,10 @@ var Bind = module.exports = function (bind, dataContext) {
     }
 
     for (var key in bind.listen) {
-        if (!bind.listen.hasOwnProperty(key)) return;
+        if (!bind.listen.hasOwnProperty(key)) continue;
 
         var curListen = bind.listen[key];
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
+
