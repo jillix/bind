@@ -105,6 +105,9 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         attr: function(target, context, attrTypes, dataContext) {
+            if (!attrTypes || !attrTypes.length) {
+                return;
+            }
             for (var i = 0; l < attrTypes.length; ++i) {
                 var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
                 target.attr(attrTypes[i].name, value);
@@ -124,6 +127,9 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         addClass: function(target, context, classes, dataContext) {
+            if (!classes || !classes.length) {
+                return;
+            }
             for (var i = 0; l < classes.length; ++i) {
                 target.addClass(classes[i]);
             }
@@ -142,6 +148,9 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         removeClass: function(target, context, classes, dataContext) {
+            if (!classes || !classes.length) {
+                return;
+            }
             for (var i = 0; l < classes.length; ++i) {
                 target.removeClass(classes[i]);
             }
