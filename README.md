@@ -5,8 +5,24 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.2.0
+* fixed the `return` problem introduced in `v0.1.7` with `obj.hasOwnProperty`
+* fixed more IE8 issues
+* added option to prevent sending the DOM event to the handler/emit in the `on` bind configuration:
+
+```json
+{
+    "target": ".myButton",
+    "on": [{
+        "name": "click",
+        "handler": "thisHandlerDoesNotReceiveTheEvent",
+        "noEvent": true
+    }]
+}
+```
+
 ##### v0.1.7
- - added "if (!obj.hasOwnProperty(key)) return;" to object for loops
+* added "if (!obj.hasOwnProperty(key)) return;" to object for loops
 
 ##### v0.1.6
 * removed unused file filters.js
@@ -40,8 +56,8 @@ var binds = [{
     "target": ".myDynamicAddedElement",
     "on": [{
         "name": "click",
-        "delegated": true,
-        "handler": "myHandler"
+        "handler": "myHandler",
+        "delegated": true
     }]
 }
 ```
