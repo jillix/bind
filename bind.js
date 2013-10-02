@@ -108,7 +108,7 @@ var Bind = module.exports = function (bind, dataContext) {
             if (!attrTypes || !attrTypes.length) {
                 return;
             }
-            for (var i = 0; l < attrTypes.length; ++i) {
+            for (var i = 0; i < attrTypes.length; ++i) {
                 var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
                 target.attr(attrTypes[i].name, value);
             }
@@ -130,7 +130,7 @@ var Bind = module.exports = function (bind, dataContext) {
             if (!classes || !classes.length) {
                 return;
             }
-            for (var i = 0; l < classes.length; ++i) {
+            for (var i = 0; i < classes.length; ++i) {
                 target.addClass(classes[i]);
             }
         },
@@ -151,7 +151,7 @@ var Bind = module.exports = function (bind, dataContext) {
             if (!classes || !classes.length) {
                 return;
             }
-            for (var i = 0; l < classes.length; ++i) {
+            for (var i = 0; i < classes.length; ++i) {
                 target.removeClass(classes[i]);
             }
         },
@@ -260,7 +260,7 @@ var Bind = module.exports = function (bind, dataContext) {
     }
 
     if (bind.on) {
-        for (var i = 0, l = bind.on.length; i < l; ++i) {
+        for (var i = 0; i < bind.on.length; ++i) {
             var curOn = bind.on[i];
             if (curOn.handler || curOn.emit) {
                 (function (curOn) {
