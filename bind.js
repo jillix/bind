@@ -266,10 +266,13 @@ var Bind = module.exports = function (bind, dataContext) {
                 (function (curOn) {
                     var t = target;
                     var s = null;
+
+                    // of the delegated option is set, this bind will work for future DOM insertions
                     if (curOn.delegated) {
                         t = context;
                         s = target.selector;
                     }
+
                     t.on(curOn.name, s,function(event) {
                         event.stopPropagation();
     
@@ -281,7 +284,10 @@ var Bind = module.exports = function (bind, dataContext) {
                             name = name.name;
                         }
     
-                        args.push(event);
+                        // if the noEvent option is set, the DOM event will not be passed to the called handler or emitted event
+                        if (!curOn.noEvent) {
+                            args.push(event);
+                        }
                         args.push(dataContext);
     
                         if (typeof name === "function") {
