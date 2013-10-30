@@ -138,7 +138,7 @@ var Bind = module.exports = function (bind, dataContext) {
             if (!propTypes || !propTypes.length) {
                 return;
             }
-            for (var i = 0; i < prop.length; ++i) {
+            for (var i = 0; i < propTypes.length; ++i) {
                 var value = computeStringOrSourceDataValue(propTypes[i].value, dataContext);
                 target.prop(propTypes[i].name, value);
             }
