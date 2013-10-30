@@ -5,6 +5,9 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.2.1
+* added `prop` feature in Bind
+
 ##### v0.2.0
 * fixed the `return` problem introduced in `v0.1.7` with `obj.hasOwnProperty`
 * fixed more IE8 issues
