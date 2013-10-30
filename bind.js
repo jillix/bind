@@ -96,7 +96,7 @@ var Bind = module.exports = function (bind, dataContext) {
          *              {
          *                  "name": "the_attribute name",
          *                  "value": {
-         *                      "source": "the_field_name_from_a_source"
+         *                      "source": "the_field_value_from_a_source"
          *                  }
          *              },
          *              ...
@@ -111,6 +111,36 @@ var Bind = module.exports = function (bind, dataContext) {
             for (var i = 0; i < attrTypes.length; ++i) {
                 var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
                 target.attr(attrTypes[i].name, value);
+            }
+        },
+        
+        // add/modify properties
+        /* Examples:
+         *  "binds": [
+         *      {
+         *          "prop": [
+         *              {
+         *                  "name": "prop name",
+         *                  "value": "a_string_value"
+         *              },
+         *              {
+         *                  "name": "prop name",
+         *                  "value": {
+         *                      "source": "the_prop_value_from_a_source"
+         *                  }
+         *              },
+         *              ...
+         *          ]
+         *      }
+         *  ]
+         */
+        prop: function(target, context, propTypes, dataContext) {
+            if (!propTypes || !propTypes.length) {
+                return;
+            }
+            for (var i = 0; i < prop.length; ++i) {
+                var value = computeStringOrSourceDataValue(propTypes[i].value, dataContext);
+                target.prop(propTypes[i].name, value);
             }
         },
 
@@ -319,4 +349,3 @@ var Bind = module.exports = function (bind, dataContext) {
         self.on(curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
-
