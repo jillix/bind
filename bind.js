@@ -1,38 +1,20 @@
-function findValue (parent, dotNot) {
-
-    if (!dotNot) return undefined;
-
-    var splits = dotNot.split(".");
-    var value;
-
-    for (var i = 0; i < splits.length; i++) {
-        value = parent[splits[i]];
-        if (value === undefined) return undefined;
-        if (typeof value === "object") parent = value;
-    }
-
-    return value;
-}
-
-function findFunction (parent, dotNot) {
-
-    var func = findValue(parent, dotNot);
-
-    if (typeof func !== "function") {
-        return undefined;
-    }
-
-    return func;
-}
-
+/**
+ * Bind
+ * ====
+ *
+ * Bind content and events to the DOM and create DOM Elements.
+ *
+ * */
 var Bind = module.exports = function (bind, dataContext) {
 
-    var self = this;
+    var self = this
+      , context = $(this.dom)
+      ;
 
-    var context = $(this.dom);
     if (bind.context) {
         context = $(bind.context, context);
     }
+
     var target = context;
     if (bind.target) {
         target = $(bind.target, context);
@@ -40,17 +22,19 @@ var Bind = module.exports = function (bind, dataContext) {
 
     dataContext = dataContext || {};
 
-    function computeStringOrSourceDataValue(dataType, dataContext) {
+    function computeStringOrSourceDataValue (dataType, dataContext) {
+
         var value = "";
         if (typeof dataType === "string") {
             value = dataType;
         } else {
             value = computeDataValue(dataType, dataContext);
         }
+
         return value;
     }
 
-    function computeDataValue(dataType, dataContext) {
+    function computeDataValue (dataType, dataContext) {
 
         var dataSource = undefined;
 
@@ -58,7 +42,7 @@ var Bind = module.exports = function (bind, dataContext) {
         if (dataType.source === "$") {
             dataSource = dataContext.toString();
         } else {
-            dataSource = findValue(dataContext, dataType.source);
+            dataSource = Utils.findValue (dataContext, dataType.source);
         }
 
         if (dataSource === undefined || dataSource === null) {
@@ -67,16 +51,16 @@ var Bind = module.exports = function (bind, dataContext) {
             } else {
                 value = "?" + dataType.source + "?";
             }
-        } else if (typeof dataSource === "object") {
+        } else if (dataSource.constructor.name === "Object") {
             var locale = M.getLocale();
             value = dataSource[locale] || "Missing value for '" + locale + "' language";
         } else {
             value = dataSource;
         }
 
-        var filterFunction = findFunction(self, dataType.filter) || findFunction(window, dataType.filter);
+        var filterFunction = Utils.findFunction (self, dataType.filter) || Utils.findFunction (window, dataType.filter);
         if (typeof filterFunction === "function") {
-            value = filterFunction(self, dataContext, dataType.source, value);
+            value = filterFunction (self, dataContext, dataType.source, value);
         }
 
         return value;
@@ -84,8 +68,10 @@ var Bind = module.exports = function (bind, dataContext) {
 
     var domManipulators = {
 
-        // add/modify attribute
-        /* Examples:
+        /**
+         *  Add/modify attribute
+         *
+         *  Examples:
          *  "binds": [
          *      {
          *          "attr": [
@@ -104,18 +90,20 @@ var Bind = module.exports = function (bind, dataContext) {
          *      }
          *  ]
          */
-        attr: function(target, context, attrTypes, dataContext) {
+        attr: function (target, context, attrTypes, dataContext) {
             if (!attrTypes || !attrTypes.length) {
                 return;
             }
             for (var i = 0; i < attrTypes.length; ++i) {
-                var value = computeStringOrSourceDataValue(attrTypes[i].value, dataContext);
+                var value = computeStringOrSourceDataValue (attrTypes[i].value, dataContext);
                 target.attr(attrTypes[i].name, value);
             }
         },
 
-        // add/modify properties
-        /* Examples:
+        /**
+         *  Add/modify properties
+         *
+         *  Examples:
          *  "binds": [
          *      {
          *          "prop": [
@@ -134,18 +122,21 @@ var Bind = module.exports = function (bind, dataContext) {
          *      }
          *  ]
          */
-        prop: function(target, context, propTypes, dataContext) {
+        prop: function (target, context, propTypes, dataContext) {
+
             if (!propTypes || !propTypes.length) {
                 return;
             }
+
             for (var i = 0; i < propTypes.length; ++i) {
-                var value = computeStringOrSourceDataValue(propTypes[i].value, dataContext);
+                var value = computeStringOrSourceDataValue (propTypes[i].value, dataContext);
                 target.prop(propTypes[i].name, value);
             }
         },
 
-        // add class
-        /* Examples:
+        /**
+         *  Add class
+         *  Examples:
          *  "binds": [
          *      {
          *          "addClass": [
@@ -165,8 +156,9 @@ var Bind = module.exports = function (bind, dataContext) {
             }
         },
 
-        // remove class
-        /* Examples:
+        /**
+         *  Remove class
+         *  Examples:
          *  "binds": [
          *      {
          *          "removeClass": [
@@ -178,16 +170,20 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         removeClass: function(target, context, classes, dataContext) {
+
             if (!classes || !classes.length) {
                 return;
             }
+
             for (var i = 0; i < classes.length; ++i) {
                 target.removeClass(classes[i]);
             }
         },
 
-        // innerHTML
-        /* Examples:
+        /**
+         *  Modify HTML
+         *
+         *  Examples:
          *  "binds": [
          *      {
          *          "html": "a_string_value"
@@ -201,17 +197,21 @@ var Bind = module.exports = function (bind, dataContext) {
          *  ]
          */
         html: function(target, context, dataType, dataContext) {
-            var value = computeStringOrSourceDataValue(dataType, dataContext);
+
+            var value = computeStringOrSourceDataValue (dataType, dataContext);
+
             if (value === undefined || value === null) {
                 value = '';
             } else {
                 value = value.toString();
             }
+
             target.html(value);
         },
 
-        // repeat the target for each item in array source
         /*
+         *  Repeat the target for each item in array source
+         *
          *   "binds": [
          *       {
          *           "repeat": {
@@ -239,18 +239,19 @@ var Bind = module.exports = function (bind, dataContext) {
 
             var sourceArray = dataContext[bindTemplate.source] || [];
 
-            if (Object.prototype.toString.call(sourceArray) !== "[object Array]" ) {
+            if (!sourceArray || sourceArray.constructor.name !== "Array" ) {
                 console.warn("A bind 'repeat' did not find an array in the source field of the data context");
                 return;
             }
 
-            var template = target.clone();
-            var container = target.parent();
+            var template = target.clone()
+              , container = target.parent()
+              ;
 
             // run the pre-filtering handler
-            var filterFunction = findFunction(self, bindTemplate.preFilter) || findFunction(window, bindTemplate.prefilter);
+            var filterFunction = Utils.findFunction (self, bindTemplate.preFilter) || Utils.findFunction (window, bindTemplate.prefilter);
             if (filterFunction) {
-                sourceArray = filterFunction(self, dataContext, bindTemplate.source, sourceArray, container);
+                sourceArray = filterFunction (self, dataContext, bindTemplate.source, sourceArray, container);
             }
 
             // run the binds for each item
@@ -265,16 +266,16 @@ var Bind = module.exports = function (bind, dataContext) {
                 for (var j = 0; j < bindTemplate.binds.length; ++j) {
                     var bind = bindTemplate.binds[j];
                     bind.context = newDom;
-                    Bind.call(self, bind, sourceArray[i]);
+                    Bind.call (self, bind, sourceArray[i]);
                 }
 
                 container.append(newDom);
             }
 
             // run the post-filtering handler
-            filterFunction = findFunction(self, bindTemplate.postFilter) || findFunction(window, bindTemplate.postFilter);
+            filterFunction = Utils.findFunction (self, bindTemplate.postFilter) || Utils.findFunction (window, bindTemplate.postFilter);
             if (filterFunction) {
-                sourceArray = filterFunction(self, dataContext, bindTemplate.source, sourceArray, container);
+                sourceArray = filterFunction (self, dataContext, bindTemplate.source, sourceArray, container);
             }
 
             target.remove();
@@ -318,6 +319,7 @@ var Bind = module.exports = function (bind, dataContext) {
                         if (!curOn.noEvent) {
                             args.push(event);
                         }
+
                         args.push(dataContext);
 
                         if (typeof name === "function") {
@@ -325,14 +327,14 @@ var Bind = module.exports = function (bind, dataContext) {
                             return false;
                         }
 
-                        var handler = findFunction(self, name) || findFunction(window, name);
+                        var handler = Utils.findFunction (self, name) || Utils.findFunction (window, name);
 
                         if (typeof handler === "function") {
                             handler.apply(self, args);
                         }
 
                         if (curOn.emit) {
-                            self.emit(curOn.emit, dataContext);
+                            self.emit (curOn.emit, dataContext);
                         }
 
                         return false;
@@ -346,6 +348,6 @@ var Bind = module.exports = function (bind, dataContext) {
         if (!bind.listen.hasOwnProperty(key)) continue;
 
         var curListen = bind.listen[key];
-        self.on(curListen.name, curListen.miid, self[curListen.handler]);
+        self.on (curListen.name, curListen.miid, self[curListen.handler]);
     }
 };

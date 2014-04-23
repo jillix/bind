@@ -5,6 +5,9 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.2.2
+* added util library as dependecy
+
 ##### v0.2.1
 * added `prop` feature in Bind
 

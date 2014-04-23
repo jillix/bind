@@ -1,9 +1,10 @@
 {
-    "source": "github",
-    "owner": "jillix",
-    "name": "bind",
-    "dependencies": [
-        "/bind.js",
-        "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+    "source": "github"
+  , "owner": "jillix"
+  , "name": "bind"
+  , "dependencies": [
+        "/bind.js"
+      , "github/jillix/utils/v0.1.1"
+      , "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
     ]
 }
