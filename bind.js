@@ -113,7 +113,7 @@ var Bind = module.exports = function (bind, dataContext) {
                 target.attr(attrTypes[i].name, value);
             }
         },
-        
+
         // add/modify properties
         /* Examples:
          *  "binds": [
@@ -305,36 +305,36 @@ var Bind = module.exports = function (bind, dataContext) {
 
                     t.on(curOn.name, s,function(event) {
                         event.stopPropagation();
-    
+
                         var name = curOn.handler;
                         var args = [];
-    
+
                         if (typeof name === "object") {
                             args = name.args || [];
                             name = name.name;
                         }
-    
+
                         // if the noEvent option is set, the DOM event will not be passed to the called handler or emitted event
                         if (!curOn.noEvent) {
                             args.push(event);
                         }
                         args.push(dataContext);
-    
+
                         if (typeof name === "function") {
                             name.apply(self, args);
                             return false;
                         }
-    
+
                         var handler = findFunction(self, name) || findFunction(window, name);
-    
+
                         if (typeof handler === "function") {
                             handler.apply(self, args);
                         }
-    
+
                         if (curOn.emit) {
                             self.emit(curOn.emit, dataContext);
                         }
-    
+
                         return false;
                     });
                 })(curOn);
