@@ -6,7 +6,7 @@ Bind content and events to the DOM and create DOM Elements.
 ### Change Log
 
 ##### v0.3.0
-* Updated to `utils@v0.1.4`
+* Updated to `utils@v0.1.5`
 
 ##### v0.2.2
 * added util library as dependecy
