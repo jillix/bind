@@ -1,4 +1,4 @@
-// dependencies
+// Dependencies
 var Utils = require ("github/jillix/utils");
 
 /**
@@ -10,9 +10,8 @@ var Utils = require ("github/jillix/utils");
  * */
 var Bind = module.exports = function (bind, dataContext) {
 
-    var self = this
-      , context = $(this.dom)
-      ;
+    var self = this;
+    var context = $(this.dom);
 
     if (bind.context) {
         context = $(bind.context, context);
