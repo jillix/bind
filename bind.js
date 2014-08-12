@@ -53,7 +53,7 @@ var Bind = module.exports = function (bind, dataContext) {
             } else {
                 value = "?" + dataType.source + "?";
             }
-        } else if (dataSource.constructor.name === "Object") {
+        } else if (typeof dataSource === "object") {
             var locale = M.getLocale();
             value = dataSource[locale] || "Missing value for '" + locale + "' language";
         } else {
@@ -241,7 +241,7 @@ var Bind = module.exports = function (bind, dataContext) {
 
             var sourceArray = dataContext[bindTemplate.source] || [];
 
-            if (!sourceArray || sourceArray.constructor.name !== "Array" ) {
+            if (!sourceArray || !(sourceArray instanceof Array)) {
                 console.warn("A bind 'repeat' did not find an array in the source field of the data context");
                 return;
             }
@@ -353,3 +353,4 @@ var Bind = module.exports = function (bind, dataContext) {
         self.on (curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
+
