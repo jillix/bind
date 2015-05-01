@@ -5,6 +5,9 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.3.2
+* properly set Array values
+
 ##### v0.3.1
 * removed `contructor.name` for IE compatibility
 
