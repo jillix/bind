@@ -53,6 +53,8 @@ var Bind = module.exports = function (bind, dataContext) {
             } else {
                 value = "?" + dataType.source + "?";
             }
+        } else if (dataSource instanceof Array) {
+            value = dataSource.join(", ");
         } else if (typeof dataSource === "object") {
             var locale = M.getLocale();
             value = dataSource[locale] || "Missing value for '" + locale + "' language";
@@ -353,4 +355,3 @@ var Bind = module.exports = function (bind, dataContext) {
         self.on (curListen.name, curListen.miid, self[curListen.handler]);
     }
 };
-
