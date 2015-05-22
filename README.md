@@ -5,6 +5,9 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.3.3
+* Updated to `utils@v0.1.8`
+
 ##### v0.3.2
 * properly set Array values
 

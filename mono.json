@@ -4,7 +4,7 @@
     "name": "bind",
     "dependencies": [
         "/bind.js",
-        "github/jillix/utils/v0.1.5",
+        "github/jillix/utils/v0.1.8",
         "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
     ]
 }
