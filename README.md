@@ -5,6 +5,10 @@ Bind content and events to the DOM and create DOM Elements.
 
 ### Change Log
 
+##### v0.4.0
+ - transferred module to the new jxMono organization
+ - updated Utils to `v0.2.0`
+
 ##### v0.3.3
 * Updated to `utils@v0.1.8`
 
