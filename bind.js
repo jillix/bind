@@ -1,5 +1,5 @@
 // Dependencies
-var Utils = require ("github/jillix/utils");
+var Utils = require ("github/jxmono/utils");
 
 /**
  * Bind
